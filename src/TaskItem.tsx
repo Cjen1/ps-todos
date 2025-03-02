@@ -3,7 +3,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { type ChangeEvent, type FC, useCallback } from "react";
 import styles from "./TaskItem.module.css";
-import { updateTask } from "./taskStore";
+import { updateTask, updateTaskCheck } from "./taskStore";
 import type { Task } from "./types";
 
 interface Props {
@@ -23,6 +23,12 @@ export const TaskItem: FC<Props> = ({ task }) => {
     },
     [task],
   );
+  const handleCheck = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      updateTaskCheck(task.id, event.target.checked);
+    },
+    [task],
+  );
 
   return (
     <li 
@@ -30,6 +36,8 @@ export const TaskItem: FC<Props> = ({ task }) => {
       ref={setNodeRef}
       style={style}
     >
+      <input type='checkbox' className={styles.checkbox} checked={task.check} onChange={handleCheck}/>
+      <input className={styles.input} value={task.value} onChange={handleChange} />
       <button type="button" className={styles.button} {...listeners} {...attributes}>
         <svg
           width="24"
@@ -50,7 +58,6 @@ export const TaskItem: FC<Props> = ({ task }) => {
           <circle cx="15" cy="19" r="1" />
         </svg>
       </button>
-      <input className={styles.input} value={task.value} onChange={handleChange} />
     </li>
   );
 };

@@ -4,7 +4,7 @@ import type {TaskStatus} from "./types";
 import { addTask } from "./taskStore";
 
 interface Props {
-  status; TaskStatus;
+  status: TaskStatus;
 }
 
 export const TaskAddButton: FC<Props> = ({ status }) => {

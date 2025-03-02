@@ -33,3 +33,6 @@
   outline: 1px solid var(--zinc-400);
   border-radius: var(--rounded-xs);
 }
+
+.checkbox {
+}

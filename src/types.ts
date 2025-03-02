@@ -4,5 +4,6 @@ export interface Task {
   id: string;
   status: TaskStatus;
   value: string;
+  check: boolean;
   order: number;
 }

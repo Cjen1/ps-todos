@@ -35,6 +35,7 @@ export const addTask = (status: TaskStatus) => {
     id,
     status,
     value: "",
+    check: false,
     order,
   };
 };
@@ -43,6 +44,13 @@ export const updateTask = (id: string, value: string) => {
   const task = taskStore[id];
   if (task) {
     task.value = value;
+  }
+};
+
+export const updateTaskCheck = (id: string, value: boolean) => {
+  const task = taskStore[id];
+  if (task) {
+    task.check = value;
   }
 };
 
