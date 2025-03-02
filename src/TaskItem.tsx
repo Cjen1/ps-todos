@@ -1,44 +1,36 @@
-
-import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 import { type ChangeEvent, type FC, useCallback } from "react";
 import styles from "./TaskItem.module.css";
-import { updateTask, updateTaskCheck } from "./taskStore";
-import type { Task } from "./types";
+import { ytasks, type YTask} from "./taskStore";
+import {useY} from "react-yjs";
+import * as A from "./accessors";
 
-interface Props {
-  task: Task;
-}
+export const TaskItem: FC<{tid: string}> = ({ tid }) => {
 
-export const TaskItem: FC<Props> = ({ task }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: task.id,
-  });
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  };
+  const task = ytasks.get(tid) as YTask;
+  useY(task);
+
   const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      updateTask(task.id, event.target.value);
+    (_event: ChangeEvent<HTMLInputElement>) => {
+      //updateTask(task.tid, event.target.value);
     },
     [task],
   );
   const handleCheck = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      updateTaskCheck(task.id, event.target.checked);
+    (_event: ChangeEvent<HTMLInputElement>) => {
+      //updateTaskCheck(task.tid, event.target.checked);
     },
     [task],
   );
 
+  const isDragging = false;
+
   return (
     <li 
       className={`${styles.listitem} ${isDragging ? styles.isDragging : ""}`}
-      ref={setNodeRef}
-      style={style}
     >
-      <input type='checkbox' className={styles.checkbox} checked={task.check} onChange={handleCheck}/>
-      <input className={styles.input} value={task.value} onChange={handleChange} />
-      <button type="button" className={styles.button} {...listeners} {...attributes}>
+      <input type='checkbox' className={styles.checkbox} checked={task.get(A.COMPLETE) as boolean} onChange={handleCheck}/>
+      <input className={styles.input} value={task.get(A.DESCRIPTION) as string} onChange={handleChange} />
+      <button type="button" className={styles.button}>
         <svg
           width="24"
           height="24"

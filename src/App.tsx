@@ -1,23 +1,23 @@
 import type { FC } from "react";
 import styles from "./App.module.css";
-import { TaskColumn } from "./TaskColumn";
-import { DndProvider } from "./dnd/DndProvider";
-import { useSyncToYjsEffect } from "./yjs/useSyncToYjsEffect";
+import { Project } from "./Project";
+import {AddProjectButton} from "./AddProjectButton";
+import { useY } from "react-yjs";
+import {yprojects} from "./taskStore.ts";
 
 const App: FC = () => {
-  useSyncToYjsEffect();
+  useY(yprojects);
 
   return (
-    <DndProvider>
-      <div className={styles.wrapper}>
-        <h1 className={styles.heading}>Projects / Board</h1>
-        <div className={styles.grid}>
-          <TaskColumn status="To Do" />
-          <TaskColumn status="In Progress" />
-          <TaskColumn status="Done" />
-        </div>
+    <div className={styles.wrapper}>
+      <h1 className={styles.heading}>Jensen-King Todos</h1>
+      <div className={styles.grid}>
+        { Array.from(yprojects.keys()).map((pid, _) => 
+          <Project pid={pid} key={pid} /> 
+        )}
       </div>
-    </DndProvider>
+      <AddProjectButton pid="test"/>
+    </div>
   );
 };
 
