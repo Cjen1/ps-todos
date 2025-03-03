@@ -11,4 +11,6 @@ Run node server using `npm run dev`
 - [] local store
 - [] more persistent remote store
 - [] multi-line task descriptions
+- [] context menu
+  - [] recurring tasks
 
