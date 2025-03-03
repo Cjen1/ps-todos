@@ -18,11 +18,13 @@ export type YTask = Y.Map<
 // (nanoid -> YTask)
 export const ytasks = ydoc.getMap<YTask>("yjs-tasks");
 
-// Just a set
-export const yprojects = ydoc.getMap<Y.Map<string>>("yjs-projects");
+export interface ProjectMetadata {
+  name : string
+}
+export const yprojectmetadata = ydoc.getMap<Y.Map<string>>("yjs-project-metadata");
 
 export const projectTids = (pid: string): string[] =>
-  Array.from(yprojects.get(pid)?.keys() ?? [])
+  Array.from(ytasks.keys())
     .filter((tid: string) => ytasks.get(tid)?.get(A.PROJECT) === pid)
     .sort((tid1: string, tid2: string) => {
       const o1 = ytasks.get(tid1)?.get(A.ORDER);
@@ -35,8 +37,10 @@ export const projectTids = (pid: string): string[] =>
 
 export const addProject = () => {
   const pid = nanoid();
-  if (!yprojects.has(pid)) {
-    yprojects.set(pid, new Y.Map<string>());
+  if (!yprojectmetadata.has(pid)) {
+    yprojectmetadata.set(pid, {
+      name : ""
+    });
   }
 };
 
@@ -61,13 +65,15 @@ export const addTask = (pid: string) => {
   task.set(A.METADATA, {});
   task.set(A.ORDER, order);
   ytasks.set(tid, task);
-  yprojects.get(pid)?.set(tid, "");
-  console.log("Adding", tid, task.toJSON());
 };
 
 export const updateTask = (tid: string, value: string) => {
   ytasks.get(tid)?.set(A.DESCRIPTION, value);
 };
+
+export const updateTaskComplete = (tid : string, complete : boolean) => {
+  ytasks.get(tid)?.set(A.COMPLETE, complete);
+}
 
 export const moveTask = (
   tid: string,
@@ -75,15 +81,11 @@ export const moveTask = (
   prevId?: string,
   nextId?: string,
 ) => {
-  console.log(tid, pid, prevId, nextId);
   const order = computeOrder(prevId, nextId);
   const task = ytasks.get(tid);
   if (task) {
     const prev_pid = task.get(A.PROJECT) as string;
-    console.log(tid, prev_pid, pid);
     task.set(A.PROJECT, pid);
     task.set(A.ORDER, order);
-    yprojects.get(prev_pid)?.delete(tid);
-    yprojects.get(pid)?.set(tid, "");
   }
 };

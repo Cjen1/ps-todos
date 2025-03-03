@@ -2,16 +2,14 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { type ChangeEvent, type FC, useCallback } from "react";
 import styles from "./TaskItem.module.css";
-import { ytasks, type YTask } from "./taskStore";
+import { ytasks, type YTask, updateTask, updateTaskComplete} from "./taskStore";
 import { useY } from "react-yjs";
 import * as A from "./accessors";
 
 export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
   // render dnd drag
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: tid,
-    });
+    useDraggable({id: tid});
   const style = {
     transform: CSS.Translate.toString(transform),
   };
@@ -21,13 +19,13 @@ export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
 
   const handleChange = useCallback(
     (_event: ChangeEvent<HTMLInputElement>) => {
-      //updateTask(task.tid, event.target.value);
+      updateTask(tid, event.target.value);
     },
     [task],
   );
   const handleCheck = useCallback(
     (_event: ChangeEvent<HTMLInputElement>) => {
-      //updateTaskCheck(task.tid, event.target.checked);
+      updateTaskComplete(tid, event.target.checked);
     },
     [task],
   );
@@ -46,7 +44,7 @@ export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
       />
       <input
         className={styles.input}
-        value={true ? tid : (task.get(A.DESCRIPTION) as string)}
+        value={task.get(A.DESCRIPTION) as string}
         onChange={handleChange}
       />
       <button

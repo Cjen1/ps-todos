@@ -4,7 +4,6 @@ import { moveTask } from "../taskStore";
 
 export const DndProvider: FC<PropsWithChildren> = ({ children }) => {
   const handleDragEnd = useCallback((event: DragEndEvent) => {
-    console.log("DRAG_END");
     if (!event.over) {
       return;
     }
