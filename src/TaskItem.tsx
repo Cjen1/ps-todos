@@ -2,15 +2,16 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { type ChangeEvent, type FC, useCallback } from "react";
 import styles from "./TaskItem.module.css";
-import { ytasks, type YTask} from "./taskStore";
-import {useY} from "react-yjs";
+import { ytasks, type YTask } from "./taskStore";
+import { useY } from "react-yjs";
 import * as A from "./accessors";
 
-export const TaskItem: FC<{tid: string}> = ({ tid }) => {
+export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
   // render dnd drag
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: tid,
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: tid,
+    });
   const style = {
     transform: CSS.Translate.toString(transform),
   };
@@ -32,14 +33,28 @@ export const TaskItem: FC<{tid: string}> = ({ tid }) => {
   );
 
   return (
-    <li 
+    <li
       className={`${styles.listitem} ${isDragging ? styles.isDragging : ""}`}
       ref={setNodeRef}
       style={style}
     >
-      <input type='checkbox' className={styles.checkbox} checked={task.get(A.COMPLETE) as boolean} onChange={handleCheck}/>
-      <input className={styles.input} value={true ? tid : task.get(A.DESCRIPTION) as string} onChange={handleChange} />
-      <button type="button" className={styles.button} {...listeners} {...attributes}>
+      <input
+        type="checkbox"
+        className={styles.checkbox}
+        checked={task.get(A.COMPLETE) as boolean}
+        onChange={handleCheck}
+      />
+      <input
+        className={styles.input}
+        value={true ? tid : (task.get(A.DESCRIPTION) as string)}
+        onChange={handleChange}
+      />
+      <button
+        type="button"
+        className={styles.button}
+        {...listeners}
+        {...attributes}
+      >
         <svg
           width="24"
           height="24"
@@ -62,4 +77,3 @@ export const TaskItem: FC<{tid: string}> = ({ tid }) => {
     </li>
   );
 };
-

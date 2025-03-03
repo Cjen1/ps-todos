@@ -1,4 +1,3 @@
-
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { type ChangeEvent, type FC, useCallback } from "react";
@@ -11,9 +10,10 @@ interface Props {
 }
 
 export const TaskItem: FC<Props> = ({ task }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: task.id,
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
   const style = {
     transform: CSS.Translate.toString(transform),
   };
@@ -31,14 +31,28 @@ export const TaskItem: FC<Props> = ({ task }) => {
   );
 
   return (
-    <li 
+    <li
       className={`${styles.listitem} ${isDragging ? styles.isDragging : ""}`}
       ref={setNodeRef}
       style={style}
     >
-      <input type='checkbox' className={styles.checkbox} checked={task.check} onChange={handleCheck}/>
-      <input className={styles.input} value={task.value} onChange={handleChange} />
-      <button type="button" className={styles.button} {...listeners} {...attributes}>
+      <input
+        type="checkbox"
+        className={styles.checkbox}
+        checked={task.check}
+        onChange={handleCheck}
+      />
+      <input
+        className={styles.input}
+        value={task.value}
+        onChange={handleChange}
+      />
+      <button
+        type="button"
+        className={styles.button}
+        {...listeners}
+        {...attributes}
+      >
         <svg
           width="24"
           height="24"
@@ -61,4 +75,3 @@ export const TaskItem: FC<Props> = ({ task }) => {
     </li>
   );
 };
-

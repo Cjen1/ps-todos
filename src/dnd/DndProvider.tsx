@@ -18,4 +18,3 @@ export const DndProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return <DndContext onDragEnd={handleDragEnd}>{children}</DndContext>;
 };
-

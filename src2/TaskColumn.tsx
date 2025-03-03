@@ -18,18 +18,18 @@ export const TaskColumn: FC<Props> = ({ status }) => {
     <div className={styles.wrapper}>
       <h2 className={styles.heading}>{status}</h2>
       <ul className={styles.list}>
-       <DroppableMarker status={status} nextId={tasks[0]?.id} />
-       {tasks.map((task, index) => (
-         <Fragment key={task.id}>
-           <TaskItem task={task} />
-           <DroppableMarker
-             key={`${task.id}-border`}
-             status={status}
-             prevId={task.id}
-             nextId={tasks[index + 1]?.id}
-           />
-         </Fragment>
-       ))}
+        <DroppableMarker status={status} nextId={tasks[0]?.id} />
+        {tasks.map((task, index) => (
+          <Fragment key={task.id}>
+            <TaskItem task={task} />
+            <DroppableMarker
+              key={`${task.id}-border`}
+              status={status}
+              prevId={task.id}
+              nextId={tasks[index + 1]?.id}
+            />
+          </Fragment>
+        ))}
       </ul>
       <TaskAddButton status={status} />
     </div>

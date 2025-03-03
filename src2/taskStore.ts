@@ -13,14 +13,15 @@ const computeOrder = (prevId?: string, nextId?: string): number => {
 
   // TODO jitter
   return (prevOrder + nextOrder) / 2;
-}
+};
 
 export const filteredTasks = (
   status: TaskStatus,
-  taskStore: TaskStore
-): Task[] => Object.values(taskStore)
-.filter((task) => task.status === status)
-.sort((a,b) => a.order - b.order);
+  taskStore: TaskStore,
+): Task[] =>
+  Object.values(taskStore)
+    .filter((task) => task.status === status)
+    .sort((a, b) => a.order - b.order);
 
 export const taskStore = proxy<TaskStore>({});
 
@@ -54,7 +55,12 @@ export const updateTaskCheck = (id: string, value: boolean) => {
   }
 };
 
-export const moveTask = (id: string, status: TaskStatus, prevId?: string, nextId?: string) => {
+export const moveTask = (
+  id: string,
+  status: TaskStatus,
+  prevId?: string,
+  nextId?: string,
+) => {
   const order = computeOrder(prevId, nextId);
   const task = taskStore[id];
   if (task) {
