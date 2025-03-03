@@ -34,7 +34,8 @@ export const projectTids = (pid : string): string[] =>
           return 0;
     });
 
-export const addProject = (pid : string) => {
+export const addProject = () => {
+  const pid = nanoid();
   if (!yprojects.has(pid)) {
     yprojects.set(pid, new Y.Map<string>());
   }
@@ -68,3 +69,17 @@ export const addTask = (pid : string) => {
 export const updateTask = (tid: string, value: string) => {
   ytasks.get(tid)?.set(A.DESCRIPTION, value);
 }
+
+export const moveTask = (tid: string, pid: string, prevId?: string, nextId?: string) => {
+  console.log(tid, pid, prevId, nextId);
+  const order = computeOrder(prevId, nextId);
+  const task = ytasks.get(tid);
+  if (task) {
+    const prev_pid = task.get(A.PROJECT) as string;
+    console.log(tid, prev_pid, pid);
+    task.set(A.PROJECT, pid);
+    task.set(A.ORDER, order);
+    yprojects.get(prev_pid)?.delete(tid);
+    yprojects.get(pid)?.set(tid, ""); 
+  }
+};

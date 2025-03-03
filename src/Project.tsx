@@ -2,7 +2,7 @@ import { type FC, Fragment } from "react";
 import { AddTaskButton } from "./AddTaskButton";
 import styles from "./Project.module.css";
 import { TaskItem } from "./TaskItem";
-//import { DroppableMarker } from "./dnd/DroppableMarker";
+import { DroppableMarker } from "./dnd/DroppableMarker";
 import { yprojects, projectTids } from "./taskStore";
 import * as Y from "yjs"
 
@@ -38,9 +38,16 @@ export const Project: FC<{pid: string}> = ({ pid }) => {
     <div className={styles.wrapper}>
       <h2 className={styles.heading}>{pid}</h2>
       <ul className={styles.list}>
-       {tids.map((tid, _) => (
+       <DroppableMarker pid={pid} nextId={tids[0]} />
+       {tids.map((tid, index) => (
          <Fragment key={tid}>
            <TaskItem tid={tid} />
+           <DroppableMarker 
+             key={`${tid}-border`}
+             pid={pid}
+             prevId={tid}
+             nextId={tids[index + 1]} 
+            />
          </Fragment>
        ))}
       </ul>
