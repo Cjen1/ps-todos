@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import styles from "./AddTaskButton.module.css";
+import styles from "./AddProjectButton.module.css";
 import { addProject } from "./taskStore";
 
 export const AddProjectButton: FC = () => {

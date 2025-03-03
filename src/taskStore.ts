@@ -1,10 +1,13 @@
 import { nanoid } from "nanoid";
 import { WebsocketProvider } from "y-websocket";
+import { IndexeddbPersistence } from "y-indexeddb";
 import * as Y from "yjs";
 import * as A from "./accessors";
 
 const ydoc = new Y.Doc();
-new WebsocketProvider("ws://localhost:1234", "yjs-todo", ydoc);
+const docName = "yjs-todo";
+new WebsocketProvider("ws://localhost:1234", docName, ydoc);
+new IndexeddbPersistence(docName, ydoc);
 
 interface TaskMetadata {}
 

@@ -6,6 +6,9 @@ import { ytasks, type YTask, updateTask, updateTaskComplete} from "./taskStore";
 import { useY } from "react-yjs";
 import * as A from "./accessors";
 
+export const ConditionalMoveHandle: FC<{tid : string}> = ({ tid }) => {
+}
+
 export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
   // render dnd drag
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -20,15 +23,73 @@ export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
   const handleChange = useCallback(
     (_event: ChangeEvent<HTMLInputElement>) => {
       updateTask(tid, event.target.value);
-    },
-    [task],
+    }
   );
   const handleCheck = useCallback(
     (_event: ChangeEvent<HTMLInputElement>) => {
       updateTaskComplete(tid, event.target.checked);
-    },
-    [task],
+    }
   );
+  const handleDelete = useCallback(
+    (_event: ChangeEvent<HTMLInputElement>) => {
+      ytasks.delete(tid);
+    }
+  );
+    
+
+  const move_or_delete_handle = !ytasks.get(tid)?.get(A.COMPLETE) ? (
+          <button
+            type="button"
+            className={styles.button}
+            {...listeners}
+            {...attributes}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="6 0 12 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <title>Drag</title>
+              <circle cx="9" cy="12" r="1" />
+              <circle cx="9" cy="5" r="1" />
+              <circle cx="9" cy="19" r="1" />
+              <circle cx="15" cy="12" r="1" />
+              <circle cx="15" cy="5" r="1" />
+              <circle cx="15" cy="19" r="1" />
+            </svg>
+          </button>
+          ) : (
+          <button
+            type="button"
+            className={styles.button}
+            onClick={handleDelete}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="6 0 12 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <title>Delete</title>
+              <circle cx="9" cy="5" r="1" />
+              <circle cx="9" cy="19" r="1" />
+
+              <circle cx="14" cy="12" r="1" />
+
+              <circle cx="18" cy="5" r="1" />
+              <circle cx="18" cy="19" r="1" />
+            </svg>
+          </button>
+          );
 
   return (
     <li
@@ -45,33 +106,10 @@ export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
       <input
         className={styles.input}
         value={task.get(A.DESCRIPTION) as string}
+        placeholder="Lorem ipsum"
         onChange={handleChange}
       />
-      <button
-        type="button"
-        className={styles.button}
-        {...listeners}
-        {...attributes}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="6 0 12 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <title>Drag</title>
-          <circle cx="9" cy="12" r="1" />
-          <circle cx="9" cy="5" r="1" />
-          <circle cx="9" cy="19" r="1" />
-          <circle cx="15" cy="12" r="1" />
-          <circle cx="15" cy="5" r="1" />
-          <circle cx="15" cy="19" r="1" />
-        </svg>
-      </button>
+      {move_or_delete_handle} 
     </li>
   );
 };
