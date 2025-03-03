@@ -14,3 +14,4 @@ Run node server using `npm run dev`
 - [ ] multi-line task descriptions
 - [ ] context menu
   - [ ] recurring tasks
+- [ ] Auth
