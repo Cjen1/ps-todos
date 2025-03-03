@@ -22,9 +22,11 @@ export type YTask = Y.Map<
 export const ytasks = ydoc.getMap<YTask>("yjs-tasks");
 
 export interface ProjectMetadata {
-  name : string
+  name: string;
 }
-export const yprojectmetadata = ydoc.getMap<Y.Map<string>>("yjs-project-metadata");
+export const yprojectmetadata = ydoc.getMap<Y.Map<string>>(
+  "yjs-project-metadata",
+);
 
 export const projectTids = (pid: string): string[] =>
   Array.from(ytasks.keys())
@@ -42,7 +44,7 @@ export const addProject = () => {
   const pid = nanoid();
   if (!yprojectmetadata.has(pid)) {
     yprojectmetadata.set(pid, {
-      name : ""
+      name: "",
     });
   }
 };
@@ -74,9 +76,9 @@ export const updateTask = (tid: string, value: string) => {
   ytasks.get(tid)?.set(A.DESCRIPTION, value);
 };
 
-export const updateTaskComplete = (tid : string, complete : boolean) => {
+export const updateTaskComplete = (tid: string, complete: boolean) => {
   ytasks.get(tid)?.set(A.COMPLETE, complete);
-}
+};
 
 export const moveTask = (
   tid: string,
