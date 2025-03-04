@@ -1,4 +1,4 @@
-import { type FC, Fragment, useCallback } from "react";
+import { type FC, Fragment, useCallback, ChangeEvent } from "react";
 import { AddTaskButton } from "./AddTaskButton";
 import styles from "./Project.module.css";
 import { TaskItem } from "./TaskItem";
@@ -7,9 +7,8 @@ import {
   ytasks,
   projectTids,
   yprojectmetadata,
-  updateProjectName,
+  ProjectMetadata,
 } from "./taskStore";
-import * as Y from "yjs";
 import * as A from "./accessors.ts";
 
 import { useY } from "react-yjs";
@@ -28,8 +27,7 @@ export const Project: FC<{ pid: string }> = ({ pid }) => {
   const complete_tids = tids.filter((tid) => ytasks.get(tid)?.get(A.COMPLETE));
 
   const handleNameChange = useCallback(
-    (_event: ChangeEvent<HTMLInputElement>) => {
-      const metadata = yprojectmetadata.get(pid);
+    (event: ChangeEvent<HTMLInputElement>) => {
       yprojectmetadata.set(pid, { name: event.target.value });
     },
     [],

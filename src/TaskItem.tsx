@@ -11,8 +11,6 @@ import {
 import { useY } from "react-yjs";
 import * as A from "./accessors";
 
-export const ConditionalMoveHandle: FC<{ tid: string }> = ({ tid }) => {};
-
 export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
   // render dnd drag
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -24,15 +22,15 @@ export const TaskItem: FC<{ tid: string }> = ({ tid }) => {
   const task = ytasks.get(tid) as YTask;
   useY(task);
 
-  const handleChange = useCallback((_event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     updateTask(tid, event.target.value);
-  });
-  const handleCheck = useCallback((_event: ChangeEvent<HTMLInputElement>) => {
+  }, []);
+  const handleCheck = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     updateTaskComplete(tid, event.target.checked);
-  });
-  const handleDelete = useCallback((_event: ChangeEvent<HTMLInputElement>) => {
+  }, []);
+  const handleDelete = useCallback((_: any) => {
     ytasks.delete(tid);
-  });
+  }, []);
 
   const move_or_delete_handle = !ytasks.get(tid)?.get(A.COMPLETE) ? (
     <button

@@ -1,10 +1,9 @@
 import { useDroppable } from "@dnd-kit/core";
 import { type FC, useId } from "react";
-import type { TaskStatus } from "../types";
 import styles from "./DroppableMarker.module.css";
 
 type Props = {
-  status: TaskStatus;
+  pid: string;
   prevId?: string | undefined;
   nextId?: string | undefined;
 };

@@ -24,7 +24,7 @@ export const ytasks = ydoc.getMap<YTask>("yjs-tasks");
 export interface ProjectMetadata {
   name: string;
 }
-export const yprojectmetadata = ydoc.getMap<Y.Map<string>>(
+export const yprojectmetadata = ydoc.getMap<ProjectMetadata>(
   "yjs-project-metadata",
 );
 
@@ -42,11 +42,9 @@ export const projectTids = (pid: string): string[] =>
 
 export const addProject = () => {
   const pid = nanoid();
-  if (!yprojectmetadata.has(pid)) {
-    yprojectmetadata.set(pid, {
-      name: "",
-    });
-  }
+  yprojectmetadata.set(pid, {
+    name: "",
+  });
 };
 
 // TODO arbitrary precision int
@@ -89,7 +87,6 @@ export const moveTask = (
   const order = computeOrder(prevId, nextId);
   const task = ytasks.get(tid);
   if (task) {
-    const prev_pid = task.get(A.PROJECT) as string;
     task.set(A.PROJECT, pid);
     task.set(A.ORDER, order);
   }
