@@ -8,7 +8,7 @@ const args = process.argv.slice(2);
 const config = JSON.parse(fs.readFileSync(args[0], 'utf8'));
 
 if (args.length > 1) {
-  config.port = Number(args[1]);
+  config.database = args[1]
 }
 
 if (!config.port) {
