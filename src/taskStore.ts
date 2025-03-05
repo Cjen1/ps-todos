@@ -11,7 +11,7 @@ const docId = searchParams.get('id') as string;
 const docToken = searchParams.get('token') as string;
 const url = `ws://127.0.0.1:5001/api/docs`;
 
-const provider = new HocuspocusProvider({
+export const provider = new HocuspocusProvider({
   url: url,
   name: docId,
   token: docToken,

@@ -3,6 +3,12 @@
   padding: 0.5rem;
 }
 
+.banner {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
 .heading {
   font-size: 1rem;
   font-weight: 400;
