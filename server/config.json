@@ -1,7 +1,6 @@
 {
   "static": "dist",
-  "port": 5001,
-  "store_path": "./store",
+  "database": "/home/cjen1/repos/yjs_todo/server/db.sqlite",
   "documents": {
     "yjs-todos": ["a-token"]
   }

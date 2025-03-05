@@ -9,7 +9,7 @@ import * as A from "./accessors";
 const searchParams = new URLSearchParams(window.location.search);
 const docId = searchParams.get('id') as string;
 const docToken = searchParams.get('token') as string;
-const url = `ws://127.0.0.1:5001/api/docs`;
+const url = `ws://127.0.0.1:5000/api/docs`;
 
 export const provider = new HocuspocusProvider({
   url: url,
