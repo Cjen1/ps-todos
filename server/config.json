@@ -2,8 +2,7 @@
   "static": "dist",
   "port": 5001,
   "store_path": "./store",
-  "documents": [
-    "asdf",
-    "yjs-todos"
-  ]
+  "documents": {
+    "yjs-todos": ["a-token"]
+  }
 }

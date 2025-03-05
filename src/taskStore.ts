@@ -8,15 +8,13 @@ import * as A from "./accessors";
 //const docId = window.location.hash;
 const searchParams = new URLSearchParams(window.location.search);
 const docId = searchParams.get('id') as string;
-const url = `ws://127.0.0.1:5000/api/docs?id=${docId}`;
-//const url = `ws://127.0.0.1:5000/api/test`;
-//const url = "ws://127.0.0.1:5000/api/docs/" + docId;
-//const url = "ws://" + window.location.host + "/api/docs";
-console.log(url);
+const docToken = searchParams.get('token') as string;
+const url = `ws://127.0.0.1:5001/api/docs`;
 
 const provider = new HocuspocusProvider({
   url: url,
   name: docId,
+  token: docToken,
 });
 const ydoc = provider.document;
 if (false) { new IndexeddbPersistence(docId, ydoc); }

@@ -17,6 +17,7 @@
     "@hocuspocus/server": "^2.15.2",
     "@y-sweet/sdk": "^0.8.2",
     "cors": "^2.8.5",
+    "express-ws": "^5.0.2",
     "nanoid": "^5.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
