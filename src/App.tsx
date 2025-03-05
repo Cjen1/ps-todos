@@ -6,22 +6,33 @@ import { DndProvider } from "./dnd/DndProvider";
 import { useY } from "react-yjs";
 import { yprojectmetadata } from "./taskStore.ts";
 
-const App: FC = () => {
-  useY(yprojectmetadata);
+const searchParams = new URLSearchParams(window.location.search)
+const docId = searchParams.get('id')
 
-  return (
-    <DndProvider>
-      <div className={styles.wrapper}>
-        <h1 className={styles.heading}>Jensen-King Todos</h1>
-        <div className={styles.grid}>
-          {Array.from(yprojectmetadata.keys()).map((pid, _) => (
-            <Project pid={pid} key={pid} />
-          ))}
+const App: FC = () => {
+  if (docId) {
+    useY(yprojectmetadata);
+
+    return (
+      <DndProvider>
+        <div className={styles.wrapper}>
+          <h1 className={styles.heading}>Jensen-King Todos</h1>
+          <div className={styles.grid}>
+            {Array.from(yprojectmetadata.keys()).map((pid, _) => (
+              <Project pid={pid} key={pid} />
+            ))}
+          </div>
+          <AddProjectButton />
         </div>
-        <AddProjectButton />
-      </div>
-    </DndProvider>
-  );
+      </DndProvider>
+    );
+  } else {
+    return (
+        <div className={styles.wrapper}>
+          <h1 className={styles.heading}>Pass list in URL</h1>
+        </div>
+        );
+  }
 };
 
 export default App;

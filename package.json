@@ -7,15 +7,21 @@
     "dev": "vite",
     "dev-websocket": "y-websocket --port 1234",
     "build": "tsc -b && vite build",
+    "serve": "npm run build && node server/server.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
+    "@hocuspocus/provider": "^2.15.2",
+    "@hocuspocus/server": "^2.15.2",
+    "@y-sweet/sdk": "^0.8.2",
+    "cors": "^2.8.5",
     "nanoid": "^5.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-yjs": "^2.0.1",
+    "websocket-express": "^3.1.2",
     "y-indexeddb": "^9.0.12",
     "y-websocket": "^2.1.0",
     "yjs": "^13.6.23"

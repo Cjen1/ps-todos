@@ -1,13 +1,25 @@
 import { nanoid } from "nanoid";
-import { WebsocketProvider } from "y-websocket";
+//import { WebsocketProvider } from "y-websocket";
+import {HocuspocusProvider } from "@hocuspocus/provider";
 import { IndexeddbPersistence } from "y-indexeddb";
 import * as Y from "yjs";
 import * as A from "./accessors";
 
-const ydoc = new Y.Doc();
-const docName = "yjs-todo";
-new WebsocketProvider("ws://localhost:1234", docName, ydoc);
-new IndexeddbPersistence(docName, ydoc);
+//const docId = window.location.hash;
+const searchParams = new URLSearchParams(window.location.search);
+const docId = searchParams.get('id') as string;
+const url = `ws://127.0.0.1:5000/api/docs?id=${docId}`;
+//const url = `ws://127.0.0.1:5000/api/test`;
+//const url = "ws://127.0.0.1:5000/api/docs/" + docId;
+//const url = "ws://" + window.location.host + "/api/docs";
+console.log(url);
+
+const provider = new HocuspocusProvider({
+  url: url,
+  name: docId,
+});
+const ydoc = provider.document;
+if (false) { new IndexeddbPersistence(docId, ydoc); }
 
 interface TaskMetadata {}
 

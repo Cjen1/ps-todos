@@ -15,3 +15,7 @@ Run node server using `npm run dev`
 - [ ] context menu
   - [ ] recurring tasks
 - [ ] Auth
+
+# Assumptions
+App is accessible under `https://<host>/`
+Hocuspocus websocket is accessible under `ws://<host>/api/doc`
