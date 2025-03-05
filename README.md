@@ -9,12 +9,13 @@ Run node server using `npm run dev`
 - [x] Multi-project
 - [x] Completed tasks are separate
 - [ ] docker
-- [ ] local store
-- [ ] more persistent remote store
+- [x] local store
+- [x] more persistent remote store
 - [ ] multi-line task descriptions
 - [ ] context menu
   - [ ] recurring tasks
-- [ ] Auth
+- [x] Auth
+- [ ] Feedback from failed auth (connection status into spinner?)
 
 # Assumptions
 App is accessible under `https://<host>/`

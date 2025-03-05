@@ -17,7 +17,7 @@ const provider = new HocuspocusProvider({
   token: docToken,
 });
 const ydoc = provider.document;
-if (false) { new IndexeddbPersistence(docId, ydoc); }
+new IndexeddbPersistence(docId, ydoc);
 
 interface TaskMetadata {}
 
