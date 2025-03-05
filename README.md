@@ -1,14 +1,12 @@
 # Yjs and react based todo list
 
-Run yjs server using `npm run dev-server`
-
-Run node server using `npm run dev`
+Run and serve files with `npm run serve -- server/config.json`
 
 # Features or task list
 
 - [x] Multi-project
 - [x] Completed tasks are separate
-- [ ] docker
+- [ ] dockerize
 - [x] local store
 - [x] more persistent remote store
 - [ ] multi-line task descriptions
