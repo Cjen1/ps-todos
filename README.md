@@ -6,14 +6,15 @@ Run and serve files with `npm run serve -- server/config.json`
 
 - [x] Multi-project
 - [x] Completed tasks are separate
-- [ ] dockerize
+- [x] dockerize
 - [x] local store
 - [x] more persistent remote store
 - [ ] multi-line task descriptions
 - [ ] context menu
   - [ ] recurring tasks
 - [x] Auth
-- [ ] Feedback from failed auth (connection status into spinner?)
+- [x] Feedback from failed auth (connection status into spinner?)
+  - [ ] Actually nice feedback
 
 # Assumptions
 App is accessible under `https://<host>/`
