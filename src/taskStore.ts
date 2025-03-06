@@ -9,10 +9,11 @@ import * as A from "./accessors";
 const searchParams = new URLSearchParams(window.location.search);
 const docId = searchParams.get('id') as string;
 const docToken = searchParams.get('token') as string;
-const url = `ws://127.0.0.1:5000/api/docs`;
 
+const provider_url_prefix = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
+const provider_url = `${provider_url_prefix}${window.location.host}/api/docs`;
 export const provider = new HocuspocusProvider({
-  url: url,
+  url: provider_url,
   name: docId,
   token: docToken,
 });
