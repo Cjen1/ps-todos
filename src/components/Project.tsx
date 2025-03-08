@@ -12,10 +12,10 @@ export const Project: FC<{ taskstore: TaskStore, pid: PID }> = ({ taskstore, pid
   useY(taskstore.ytasks);
 
   const tids = taskstore.getTIDs(pid);
-  const incomplete_tids = tids.filter(
+  const complete_tids = tids.filter(
     (tid) => !taskstore.getTaskField(tid, YTaskAccessors.COMPLETE)
   );
-  const complete_tids = tids.filter(
+  const incomplete_tids = tids.filter(
     (tid) => taskstore.getTaskField(tid, YTaskAccessors.COMPLETE)
   );
 
@@ -36,22 +36,22 @@ export const Project: FC<{ taskstore: TaskStore, pid: PID }> = ({ taskstore, pid
         />
       </h2>
       <ul className={styles.list}>
-        <DroppableMarker pid={pid} nextId={incomplete_tids[0]} />
-        {incomplete_tids.map((tid, index) => (
+        <DroppableMarker pid={pid} nextId={complete_tids[0]} />
+        {complete_tids.map((tid, index) => (
           <Fragment key={tid}>
             <TaskItem taskstore={taskstore} tid={tid} />
             <DroppableMarker
               key={`${tid}-border`}
               pid={pid}
               prevId={tid}
-              nextId={incomplete_tids[index + 1]}
+              nextId={complete_tids[index + 1]}
             />
           </Fragment>
         ))}
       </ul>
       <AddTaskButton taskstore={taskstore} pid={pid} />
       <ul className={`${styles.list} ${styles["completed-list"]}`}>
-        {complete_tids.map((tid, _) => (
+        {incomplete_tids.map((tid, _) => (
           <TaskItem key={tid} taskstore={taskstore} tid={tid} />
         ))}
       </ul>

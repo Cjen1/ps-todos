@@ -4,8 +4,8 @@ import styles from "./DroppableMarker.module.css";
 
 type Props = {
   pid: string;
-  prevId?: string | undefined;
-  nextId?: string | undefined;
+  prevId?: string;
+  nextId?: string;
 };
 
 export const DroppableMarker: FC<Props> = ({ pid, prevId, nextId }) => {

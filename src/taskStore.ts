@@ -78,7 +78,6 @@ export class TaskStore {
       if (on_load_doc_schema) {
         ts.yschema.observe(() => {
           const newMaxSchema = ts.maxSchema() as string;
-          console.log(newMaxSchema);
           if (newMaxSchema > on_load_doc_schema) {
             console.log("ERR: MUST UPGRADE SCHEMA");
           }
@@ -103,10 +102,16 @@ export class TaskStore {
     return Array.from(this.ytasks.keys())
       .filter((tid: string) => this.ytasks.get(tid)?.get(YTaskAccessors.PROJECT) === pid)
       .sort((tid1: string, tid2: string) => {
-        const o1 = this.ytasks.get(tid1)?.get(YTaskAccessors.ORDER);
-        const o2 = this.ytasks.get(tid2)?.get(YTaskAccessors.ORDER);
+        const o1 = this.ytasks.get(tid1)?.get(YTaskAccessors.ORDER) as Order;
+        const o2 = this.ytasks.get(tid2)?.get(YTaskAccessors.ORDER) as Order;
         if (o1 && o2) {
-          return (o1 as number) - (o2 as number);
+          if (o1.order != o2.order) {
+            return o1.order - o2.order;
+          }
+          if (o1.cid != o2.cid) {
+            return o1.cid - o2.cid;
+          }
+          return 0
         }
         return 0;
       });
@@ -115,7 +120,6 @@ export class TaskStore {
   addProject(name?: string | undefined): PID {
     while (true) {
       var pid = nanoid();
-      console.log(`Adding project: ${pid}`)
       if (this.yprojectmetadata.has(pid)) {
         continue;
       }
