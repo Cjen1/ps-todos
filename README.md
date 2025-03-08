@@ -9,7 +9,7 @@ Run and serve files with `npm run serve -- server/config.json`
 - [x] dockerize
 - [x] local store
 - [x] more persistent remote store
-- [ ] multi-line task descriptions
+- [x] multi-line task descriptions
 - [ ] context menu
   - [ ] recurring tasks
 - [x] Auth
