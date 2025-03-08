@@ -9,6 +9,7 @@ import {
 } from "../taskStore";
 import { useY } from "react-yjs";
 import { DragHandleSVG, DeleteHandleSVG } from "../assets/SvgHandles";
+import TextareaAutosize from "react-textarea-autosize";
 
 export const TaskItem: FC<{ taskstore: TaskStore, tid: string }> = ({ taskstore, tid }) => {
   // render dnd drag
@@ -20,10 +21,10 @@ export const TaskItem: FC<{ taskstore: TaskStore, tid: string }> = ({ taskstore,
 
   useY(taskstore.ytasks.get(tid) as YTask);
 
-  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  const onInput = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
     taskstore.ytasks.get(tid)?.set(YTaskAccessors.DESCRIPTION, event.target.value);
   }, []);
-  const handleCheck = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  const onComplete = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     taskstore.ytasks.get(tid)?.set(YTaskAccessors.COMPLETE, event.target.checked);
   }, []);
   const handleDelete = useCallback((_: any) => {
@@ -55,19 +56,21 @@ export const TaskItem: FC<{ taskstore: TaskStore, tid: string }> = ({ taskstore,
       ref={setNodeRef}
       style={style}
     >
-      <div>
+      <label className={styles["checkbox-label"]}>
         <input
           type="checkbox"
-          className={styles.checkbox}
+          className={styles["checkbox-input"]}
           checked={taskstore.getTaskField(tid, YTaskAccessors.COMPLETE) as boolean}
-          onChange={handleCheck}
+          onChange={onComplete}
+        />
+      </label>
+      <div className={styles.inputwrapper}>
+        <TextareaAutosize
+          className={styles.input}
+          value={taskstore.getTaskField(tid, YTaskAccessors.DESCRIPTION) as string}
+          onChange={onInput}
         />
       </div>
-      <input
-        className={styles.input}
-        value={taskstore.getTaskField(tid, YTaskAccessors.DESCRIPTION) as string}
-        onChange={handleChange}
-      />
       {move_or_delete_handle}
     </li>
   );

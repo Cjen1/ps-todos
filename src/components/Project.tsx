@@ -50,7 +50,7 @@ export const Project: FC<{ taskstore: TaskStore, pid: PID }> = ({ taskstore, pid
         ))}
       </ul>
       <AddTaskButton taskstore={taskstore} pid={pid} />
-      <ul>
+      <ul className={`${styles.list} ${styles["completed-list"]}`}>
         {complete_tids.map((tid, _) => (
           <TaskItem key={tid} taskstore={taskstore} tid={tid} />
         ))}

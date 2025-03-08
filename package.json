@@ -26,6 +26,7 @@
     "nanoid": "^5.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-textarea-autosize": "^8.5.7",
     "react-yjs": "^2.0.1",
     "typescript": "~5.7.2",
     "typescript-language-server": "^4.3.4",

@@ -1,29 +1,35 @@
 .listitem {
   background-color: var(--zinc-900);
   border-radius: 0.25rem;
-  padding: 0.5rem 0.25rem;
+  padding: 0.5rem 0.5rem;
   list-style: none;
-  display: flex;
   gap: 0.2rem;
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: row;
 }
 
-.input {
+.inputwrapper {
   width: 100%;
   background-color: var(--zinc-900);
   border: 0;
   color: var(--zinc-100);
   padding: 0.25rem;
+  flex: 1;
 }
 
-.input:focus-visible {
+.inputwrapper > textarea {
+  background-color: var(--zinc-900);
+  border: 0;
+  color: var(--zinc-100);
+  resize: none;
+  width: 100%;
+  height: content;
+}
+
+.inputwrapper > textarea:focus-visible {
   outline: 1px solid var(--zinc-400);
   border-radius: var(--rounded-xs);
-}
-
-.input > textarea {
-  flex: 1;
-  resize: none;
 }
 
 .movehandle {
@@ -46,5 +52,14 @@
   border-radius: var(--rounded-xs);
 }
 
-.checkbox {
+.checkbox-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.checkbox-input {
+  accent-color: var(--zinc-400);
+  outline: 1px solic var(--zinc-400);
 }
