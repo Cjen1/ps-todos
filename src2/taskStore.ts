@@ -58,15 +58,12 @@ export const addProject = () => {
   });
 };
 
-// TODO arbitrary precision int
-export const computeOrder = (prevId?: string, nextId?: string): number => {
-  const prevOrder = (prevId ? ytasks.get(prevId)?.get(A.ORDER) : null) ?? 0;
-  const nextOrder = (nextId ? ytasks.get(nextId)?.get(A.ORDER) : null) ?? 1;
+const computeOrder = (prevId?: string, nextId?: string): number => {
+    const low = (prevId ? (ytasks.get(prevId)?.get(A.ORDER) as number): null) ?? (0);
+    const high = (nextId ? (ytasks.get(nextId)?.get(A.ORDER) as number): null) ?? (1);
 
-  // TODO jitter
-  return ((prevOrder as number) + (nextOrder as number)) / 2;
-};
-
+    return ((low as number) + (high as number)) / 2;
+  };
 export const addTask = (pid: string) => {
   const tids = projectTids(pid);
   const last_tid = tids[tids.length - 1];
@@ -100,3 +97,5 @@ export const moveTask = (
   if (task) {
     task.set(A.PROJECT, pid);
     task.set(A.ORDER, order);
+  }
+};

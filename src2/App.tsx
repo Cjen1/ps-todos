@@ -9,10 +9,6 @@ import { yprojectmetadata, provider } from "./taskStore.ts";
 const searchParams = new URLSearchParams(window.location.search)
 const docId = searchParams.get('id')
 
-type ProviderConnStatus =
-  { kind: "Connecting" | "Authenticated" | "Connected" } |
-  { kind: "AuthFailed"; reason: string };
-
 const App: FC = () => {
   if (docId) {
     useY(yprojectmetadata);
