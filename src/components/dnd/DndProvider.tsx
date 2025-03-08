@@ -1,6 +1,6 @@
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { type FC, type PropsWithChildren, useCallback } from "react";
-import { TaskStore } from "../taskStore";
+import { TaskStore } from "../../taskStore";
 
 export const DndProvider: FC<{taskstore: TaskStore} & PropsWithChildren> = ({ taskstore, children }) => {
   const handleDragEnd = useCallback((event: DragEndEvent) => {

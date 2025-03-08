@@ -2,6 +2,6 @@
   "static": "dist",
   "database": "/home/cjen1/repos/yjs_todo/server/db.sqlite",
   "documents": {
-    "yjs-todos": ["a-token"]
+    "d": ["t"]
   }
 }

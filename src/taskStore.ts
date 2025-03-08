@@ -3,13 +3,15 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { IndexeddbPersistence } from "y-indexeddb";
 import * as Y from "yjs";
 
-type PID = string;
+export const CURRENT_SCHEMA = "2025-03-08";
 
-interface ProjectMetadata {
+export type PID = string;
+
+export interface ProjectMetadata {
   name: string;
 }
 
-type TID = string;
+export type TID = string;
 
 interface Order {
   order: number,
@@ -26,7 +28,7 @@ export type YTask = Y.Map<
   | Order // "order"
 >;
 
-enum YTaskAccessors {
+export enum YTaskAccessors {
   PROJECT = "project",
   DESCRIPTION = "description",
   COMPLETE = "complete",
@@ -35,15 +37,12 @@ enum YTaskAccessors {
 };
 
 export class TaskStore {
-  provider: Promise<HocuspocusProvider>;
-  provider_resolver: undefined | ((p: HocuspocusProvider) => void);
+  provider: HocuspocusProvider | undefined;
   readonly iddb: IndexeddbPersistence;
   readonly ydoc: Y.Doc;
   // (nanoid -> YTask)
   readonly ytasks: Y.Map<YTask>;
   readonly yprojectmetadata: Y.Map<ProjectMetadata>;
-  // TODO force-reload on schema change to higher schema
-  // Set of previous schemas
   readonly yschema: Y.Map<any>;
   private constructor(id: string) {
     // Fully local constructor
@@ -54,11 +53,9 @@ export class TaskStore {
       "yjs-project-metadata",
     );
     this.yschema = this.ydoc.getMap<any>("schema");
-
-    this.provider = new Promise((res, _) => this.provider_resolver = res);
   }
 
-  maxSchema(): string {
+  maxSchema(): string | undefined {
     const max_schema = Array.from(this.yschema.keys())
       .reduce(
         (prev: string | undefined, curr: string, _idx, _arr): string | undefined => {
@@ -71,33 +68,33 @@ export class TaskStore {
           return prev;
         },
         undefined);
-    return max_schema ?? "2025-03-05";
+    return max_schema;
   }
 
-  static async make(url: string, id: string, token: string) {
+  static make(url: string, id: string, token: string) {
     const ts = new TaskStore(id);
-    // read from indexedb
-    await ts.ydoc.whenLoaded;
-    const on_load_doc_schema = ts.maxSchema();
-    ts.yschema.set(on_load_doc_schema, "");
-
-    // on each change to schema
-    ts.yschema.observe(() => {
-      const maxSchema = ts.maxSchema();
-      if (maxSchema > on_load_doc_schema) {
-        console.log("ERR: MUST UPGRADE SCHEMA");
+    ts.iddb.on('synced', ()=>{
+      const on_load_doc_schema = ts.maxSchema();
+      if (on_load_doc_schema) {
+        ts.yschema.observe(() => {
+          const newMaxSchema = ts.maxSchema() as string;
+          console.log(newMaxSchema);
+          if (newMaxSchema > on_load_doc_schema) {
+            console.log("ERR: MUST UPGRADE SCHEMA");
+          }
+        });
       }
+      // Invalidate everyone older
+      ts.yschema.set(CURRENT_SCHEMA, "");
     });
 
     // hook up remote
-    const provider = new HocuspocusProvider({
+    ts.provider = new HocuspocusProvider({
       document: ts.ydoc,
       url: url,
       name: id,
       token: token
     });
-
-    ts.provider_resolver?.(provider);
 
     return ts;
   }
@@ -118,6 +115,7 @@ export class TaskStore {
   addProject(name?: string | undefined): PID {
     while (true) {
       var pid = nanoid();
+      console.log(`Adding project: ${pid}`)
       if (this.yprojectmetadata.has(pid)) {
         continue;
       }
