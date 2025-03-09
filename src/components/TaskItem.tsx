@@ -10,6 +10,7 @@ import {
 import { useY } from "react-yjs";
 import { DragHandleSVG, DeleteHandleSVG } from "../assets/SvgHandles";
 import TextareaAutosize from "react-textarea-autosize";
+import useLongPress from "./useLongPress";
 
 export const TaskItem: FC<{ taskstore: TaskStore, tid: string }> = ({ taskstore, tid }) => {
   // render dnd drag
@@ -50,20 +51,27 @@ export const TaskItem: FC<{ taskstore: TaskStore, tid: string }> = ({ taskstore,
     </button>
   );
 
+  const checkboxCheck = () => {
+    taskstore.ytasks.get(tid)?.set(YTaskAccessors.COMPLETE, !taskstore.getTaskField(tid, YTaskAccessors.COMPLETE));
+  };
+
+  const longPressElement = useLongPress(() => console.log("LongPress"), checkboxCheck);
+
+  const checkbox_style = (taskstore.getTaskField(tid, YTaskAccessors.COMPLETE) as boolean) ? styles["complete-checkbox"] : styles["incomplete-checkbox"];
+
   return (
     <li
       className={`${styles.listitem} ${isDragging ? styles.isDragging : ""}`}
       ref={setNodeRef}
       style={style}
     >
-      <label className={styles["checkbox-label"]}>
-        <input
-          type="checkbox"
-          className={styles["checkbox-input"]}
-          checked={taskstore.getTaskField(tid, YTaskAccessors.COMPLETE) as boolean}
-          onChange={onComplete}
+      <div className={styles['wrapper-checkbox']}>
+        <button
+          type="button"
+          className={`${styles["base-checkbox"]} ${checkbox_style}`}
+          {...longPressElement}
         />
-      </label>
+      </div>
       <div className={styles.inputwrapper}>
         <TextareaAutosize
           className={styles.input}
