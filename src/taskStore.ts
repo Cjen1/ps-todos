@@ -4,6 +4,7 @@ import { IndexeddbPersistence } from "y-indexeddb";
 import * as Y from "yjs";
 
 export const CURRENT_SCHEMA = "2025-03-08";
+export const REPEAT_TASK_CHECK_INTERVAL_MS = 1000;
 
 export type PID = string;
 
@@ -18,7 +19,15 @@ interface Order {
   cid: number,
 }
 
-interface TaskMetadata { }
+// add interval
+export type NoneRepeatTask = { kind: "none" };
+export type IncompleteAfterRepeatTask = { kind: "incomplete-after", duration: number, lastComplete?: number };
+export type RepeatTask = NoneRepeatTask | IncompleteAfterRepeatTask;
+
+
+export interface TaskMetadata {
+  repeat: RepeatTask,
+}
 
 export type YTask = Y.Map<
   | string // Project
@@ -73,7 +82,7 @@ export class TaskStore {
 
   static make(url: string, id: string, token: string) {
     const ts = new TaskStore(id);
-    ts.iddb.on('synced', ()=>{
+    ts.iddb.on('synced', () => {
       const on_load_doc_schema = ts.maxSchema();
       if (on_load_doc_schema) {
         ts.yschema.observe(() => {
@@ -143,7 +152,11 @@ export class TaskStore {
         return false;
       }
       case YTaskAccessors.METADATA: {
-        return {};
+        return {
+          repeat: {
+            "kind": "Never"
+          },
+        };
       }
       case YTaskAccessors.ORDER: {
         return 0;
@@ -184,7 +197,7 @@ export class TaskStore {
     task.set(YTaskAccessors.PROJECT, pid);
     task.set(YTaskAccessors.DESCRIPTION, "");
     task.set(YTaskAccessors.COMPLETE, false);
-    task.set(YTaskAccessors.METADATA, {});
+    task.set(YTaskAccessors.METADATA, { repeat: { kind: "none" } });
     task.set(YTaskAccessors.ORDER, order);
     this.ytasks.set(tid, task);
     return tid;

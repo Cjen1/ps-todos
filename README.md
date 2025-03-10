@@ -10,11 +10,13 @@ Run and serve files with `npm run serve -- server/config.json`
 - [x] local store
 - [x] more persistent remote store
 - [x] multi-line task descriptions
-- [ ] context menu
-  - [ ] recurring tasks
+- [x] context menu
+- [x] recurring tasks
+  - [ ] Fix days selector
 - [x] Auth
 - [x] Feedback from failed auth (connection status into spinner?)
   - [ ] Actually nice feedback
+- [ ] delete project
 
 # Assumptions
 App is accessible under `https://<host>/`
