@@ -102,31 +102,36 @@ const TaskSettings: FC<TaskSettingsProps> = ({ taskstore, tid, meta, isOpen, onC
   return (
     <div className={styles["settings-overlay"]}>
       <div className={styles["settings"]}>
-        <h2> Settings </h2>
-        <div>
-          <label htmlFor="repeat-type-select">Repeat:</label>
+        <h2 className={styles["settings-title"]}>Settings</h2>
+        <div className={styles["settings-group"]}>
+          <label htmlFor="repeat-type-select" className={styles["settings-label"]}>Repeat:</label>
           <select
             id="repeat-type-select"
             value={repeat_kind}
             onChange={handleRepeatTypeChange}
+            className={styles["settings-select"]}
           >
             <option value="none">None</option>
             <option value="incomplete-after">Incomplete After</option>
           </select>
         </div>
         {repeat_kind !== 'none' && (
-          <div>
+          <div className={styles["days-group"]}>
             <input
               type="number"
               id="repeat-days-input"
               min="1"
               value={meta_repeat.kind === 'incomplete-after' ? meta_repeat.duration : 1}
               onChange={handleRepeatDaysChange}
+              className={styles["days-input"]}
             />
-            <label htmlFor="repeat-days-input" style={{ marginLeft: '8px' }}>Days</label>
+            <label htmlFor="repeat-days-input" className={styles["days-label"]}>Days</label>
           </div>
         )}
-        <button onClick={onClose}>
+        <button 
+          onClick={onClose}
+          className={styles["close-button"]}
+        >
           Close
         </button>
       </div>
