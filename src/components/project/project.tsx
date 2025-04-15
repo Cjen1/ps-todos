@@ -1,5 +1,5 @@
 import { YDocUnit } from "@/lib/ydocunit";
-import {FC, useRef} from "react";
+import { FC, useRef } from "react";
 import { useY } from "react-yjs";
 
 class ProjectStore extends YDocUnit {
@@ -13,7 +13,7 @@ class ProjectStore extends YDocUnit {
   }
 }
 
-const Project : FC<{token : string, url: string, auth_token: string}> = ({token, url, auth_token}) => {
+const Project: FC<{ petname: string, token: string, url: string, auth_token: string }> = ({ petname, token, url, auth_token }) => {
   const store = useRef(null as ProjectStore | null);
   function getStore() {
     if (store.current === null) {
@@ -21,12 +21,11 @@ const Project : FC<{token : string, url: string, auth_token: string}> = ({token,
     }
     return store.current;
   }
-
-  const projectData = useY(getStore().main);
+  console.log("petname", petname);
 
   return (
     <div className="bg-card">
-      {projectData.name ?? "Name TBD"}
+      Project: {petname}
     </div>
   )
 }

@@ -3,10 +3,44 @@ import { useY } from "react-yjs";
 import { Button } from "../ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "../ui/sheet";
 import { Input } from "../ui/input";
-import { DashboardStore } from "./store";
+import { DashboardStore, ProjectMetadata } from "./store";
 import { Menu } from "lucide-react";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { object_map } from "@/lib/utils";
+
+const ProjectSettings : FC<{datastore: DashboardStore}> = ({datastore}) => {
+  const projects = useY(datastore.get_projects_map())
+
+  console.log("Rerender");
+
+  const handlePetnameChange = useCallback(
+    (ptoken: string, event: ChangeEvent<HTMLInputElement>) => {
+      console.log("handlePetnameChange", ptoken, event.target.value);
+      datastore.map_project_metadata(ptoken, (metadata: ProjectMetadata) => {
+        metadata.petname = event.target.value;
+      });
+      console.log("handlePetnameChange", datastore.get_projects_map().get(ptoken));
+    }, []);
+
+  return (
+    <ul className="flex flex-col gap-2">
+      {object_map(projects, (ptoken, { petname }) => {
+        return (<li key={ptoken} className="flex flex-col gap-2">
+          <Label className="justify-center">{ptoken}</Label>
+          <div className="flex flex-row gap-2">
+            <Label className="">Petname</Label>
+            <Input value={petname}
+              onChange={(event) => handlePetnameChange(ptoken, event)}
+            />
+          </div>
+          <Button variant="outline">Delete</Button>
+        </li>
+        )
+      })}
+    </ul>
+  )
+};
 
 export const DashboardSettings: FC<{ datastore: DashboardStore, side: "left" | "right" }> = ({ datastore, side }) => {
   const dashboardData = useY(datastore.main);
@@ -17,12 +51,13 @@ export const DashboardSettings: FC<{ datastore: DashboardStore, side: "left" | "
     },
     [],
   );
+
   return (
     <Sheet >
       <SheetTrigger asChild>
         <Button variant="link"><Menu /></Button>
       </SheetTrigger>
-      <SheetContent side={side}>
+      <SheetContent side={side} aria-describedby={undefined}>
         <SheetHeader>
           <SheetTitle>Dashboard Settings</SheetTitle>
         </SheetHeader>
@@ -41,7 +76,7 @@ export const DashboardSettings: FC<{ datastore: DashboardStore, side: "left" | "
             <Button
               variant="outline"
               className=""
-              onClick={() => datastore.create_new_project()}
+              onClick={() => datastore.create_new_project("tbd")}
             >
               Create new project
             </Button>
@@ -57,24 +92,7 @@ export const DashboardSettings: FC<{ datastore: DashboardStore, side: "left" | "
             </Button>
           </div>
           <Separator />
-          <ul className="flex flex-col gap-2">
-            <div key="1" className="flex flex-col gap-2">
-              <Label className="justify-center">Project 1</Label>
-              <div className="flex flex-row gap-2">
-                <Label className="">Petname</Label>
-                <Input value="Project 1"/>
-              </div>
-              <Button variant="outline">Delete</Button>
-            </div>
-            <div key="2" className="flex flex-col gap-2">
-              <Label className="justify-center">Project 2</Label>
-              <div className="flex flex-row gap-2">
-                <Label className="">Petname</Label>
-                <Input value="Project 2"/>
-              </div>
-              <Button variant="outline">Delete</Button>
-            </div>
-          </ul>
+          <ProjectSettings datastore={datastore} />
         </div>
       </SheetContent>
     </Sheet>

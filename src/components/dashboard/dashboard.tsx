@@ -1,11 +1,11 @@
 import { FC, useRef } from "react";
 import { useY } from "react-yjs";
-import { Separator } from "../ui/separator";
 import { ProviderState } from "../../lib/connection";
 import { Project } from "../project/project";
 import { DashboardStore } from "./store";
 import { DashboardSettings } from "./settings";
 import { Label } from "../ui/label";
+import { object_map } from "@/lib/utils";
 
 const Dashboard: FC<{ token: string, url: string }> = ({ token, url }) => {
   const store = useRef(null as DashboardStore | null);
@@ -17,8 +17,8 @@ const Dashboard: FC<{ token: string, url: string }> = ({ token, url }) => {
   }
 
   const dashboardData = useY(getStore().main);
-
-  const projects :  [string, any][] = dashboardData.projects ? Object.entries(dashboardData.projects) : [];
+  const projects = useY(getStore().get_projects_map());
+  console.log("projects", projects);
 
   return (
     <div className="bg-background flex flex-col h-screen">
@@ -30,11 +30,11 @@ const Dashboard: FC<{ token: string, url: string }> = ({ token, url }) => {
         <ProviderState provider={getStore().remote} />
       </div>
       <ul className="flex flex-col gap-5">
-        {projects.map(([projectKey, key]) =>
-          <li key={key}>
-            <Project token={projectKey} url={url} auth_token={token} />
-          </li>
-        )}
+        {object_map(projects, (ptoken, { petname }) => {
+          return (<li key={ptoken}>
+            <Project petname={petname} token={ptoken} url={url} auth_token={token} />
+          </li>)
+        })}
       </ul>
     </div>
   )
