@@ -1,73 +1,59 @@
-import { YDocUnit } from "@/lib/ydocunit";
-import * as Y from "yjs";
-import { nanoid } from "nanoid";
+import {type AutomergeUrl, generateAutomergeUrl} from '@automerge/automerge-repo'
+import { useDocument } from '@automerge/automerge-repo-react-hooks'
+import { updateText } from '@automerge/automerge/next'
+import { ChangeFn, ChangeOptions, Doc } from "@automerge/automerge/slim/next"
+import { pathToFileURL } from 'url';
 
 export type ProjectMetadata = {
   petname: string;
+};
+
+export type Dashboard = {
+    name: string;
+    projects: Map<AutomergeUrl, ProjectMetadata>;
+};
+
+type ChangeDoc = (changeFn : ChangeFn<Dashboard>, options?: ChangeOptions<Dashboard>) => void;
+
+export function update_dashboard_title(changedoc: ChangeDoc, title: string) {
+    changedoc((doc) => {
+        updateText(doc, ['name'], title);
+    });
 }
 
-export class DashboardStore extends YDocUnit {
-  /* {
-   * name: string,
-   * projects: Set(string) = Y.Map<>
-   * }
-  */
-  constructor(token: string, url: string) {
-    super(token, url, token);
-    this.get_projects_map().observeDeep((_)=>{
-      console.log("Projects changed", this.get_projects_map().toJSON());
-    })
-  }
+export function add_existing_project(changedoc: ChangeDoc, purl: AutomergeUrl, petname: string) {
+    changedoc((doc) => {
+        if (doc.projects.has(purl)) {
+            console.log("Project already exists");
+            return;
+        }
+        doc.projects.set(purl, { petname } as ProjectMetadata);
+    });
+}
 
-  set_dashboard_title(title: string) {
-    this.main.set("name", title);
-  }
+export function create_new_project(changedoc: ChangeDoc, petname: string) {
+    changedoc((doc) => {
+        const purl = generateAutomergeUrl();
+        doc.projects.set(purl, {petname} as ProjectMetadata);
+    });
+}
 
-  get_projects_map() : Y.Map<ProjectMetadata>{
-    if (!this.main.has("projects")) {
-      this.main.set("projects", new Y.Map())
-    }
-    return this.main.get("projects");
-  }
+export function update_project_petname(changedoc: ChangeDoc, purl: AutomergeUrl, petname: string) {
+    changedoc((doc) => {
+        if (!doc.projects.has(purl)) {
+            console.log("Project does not exist");
+            return;
+        }
+        updateText(doc.projects, [purl, 'petname'], petname);
+    });
+}
 
-  add_existing_project(ptoken: string, petname: string) {
-    const projects = this.get_projects_map(); 
-
-    if (projects.has(ptoken)) {
-      console.log("Project already exists");
-      return;
-    }
-
-    projects.set(ptoken, { petname } as ProjectMetadata);
-  }
-
-  create_new_project(petname: string) {
-    const projects = this.get_projects_map();
-    const ptoken = nanoid();
-    projects.set(ptoken, { petname } as ProjectMetadata);
-  }
-
-  delete_project(ptoken: string) {
-    const projects = this.get_projects_map();
-
-    if (!projects.has(ptoken)) {
-      console.log("Project does not exist");
-      return;
-    }
-
-    projects.delete(ptoken);
-  }
-
-  map_project_metadata(ptoken: string, lambda: (metadata : ProjectMetadata) => void) {
-    const projects = this.get_projects_map();
-
-    if (!projects.has(ptoken)) {
-      console.log("Project does not exist");
-      return;
-    }
-
-    const metadata = projects.get(ptoken) ?? { petname: "" } as ProjectMetadata;
-    lambda(metadata);
-    projects.set(ptoken, metadata);
-  }
+export function delete_project(changedoc: ChangeDoc, purl: AutomergeUrl) {
+    changedoc((doc) => {
+        if (!doc.projects.has(purl)) {
+            console.log("Project does not exist");
+            return;
+        }
+        doc.projects.delete(purl);
+    });
 }

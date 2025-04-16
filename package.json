@@ -12,6 +12,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@automerge/automerge": "^2.2.8",
+    "@automerge/automerge-repo": "^1.2.1",
+    "@automerge/automerge-repo-react-hooks": "^1.2.1",
+    "@automerge/automerge-repo-storage-indexeddb": "^1.2.1",
     "@dnd-kit/core": "^6.3.1",
     "@hocuspocus/extension-sqlite": "^2.15.2",
     "@hocuspocus/provider": "^2.15.2",
