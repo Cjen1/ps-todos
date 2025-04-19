@@ -48,6 +48,8 @@
     "typescript": "~5.7.2",
     "typescript-language-server": "^4.3.4",
     "vite": "^6.2.0",
+    "vite-plugin-top-level-await": "^1.5.0",
+    "vite-plugin-wasm": "^3.4.1",
     "websocket-express": "^3.1.2",
     "y-indexeddb": "^9.0.12",
     "y-websocket": "^2.1.0",

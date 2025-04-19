@@ -1,8 +1,6 @@
 import {type AutomergeUrl, generateAutomergeUrl} from '@automerge/automerge-repo'
-import { useDocument } from '@automerge/automerge-repo-react-hooks'
 import { updateText } from '@automerge/automerge/next'
-import { ChangeFn, ChangeOptions, Doc } from "@automerge/automerge/slim/next"
-import { pathToFileURL } from 'url';
+import { ChangeFn, ChangeOptions} from "@automerge/automerge/slim/next"
 
 export type ProjectMetadata = {
   petname: string;
@@ -10,7 +8,7 @@ export type ProjectMetadata = {
 
 export type Dashboard = {
     name: string;
-    projects: Map<AutomergeUrl, ProjectMetadata>;
+    projects: { [key: AutomergeUrl]: ProjectMetadata };
 };
 
 type ChangeDoc = (changeFn : ChangeFn<Dashboard>, options?: ChangeOptions<Dashboard>) => void;
@@ -21,26 +19,26 @@ export function update_dashboard_title(changedoc: ChangeDoc, title: string) {
     });
 }
 
-export function add_existing_project(changedoc: ChangeDoc, purl: AutomergeUrl, petname: string) {
-    changedoc((doc) => {
-        if (doc.projects.has(purl)) {
-            console.log("Project already exists");
-            return;
-        }
-        doc.projects.set(purl, { petname } as ProjectMetadata);
-    });
-}
-
 export function create_new_project(changedoc: ChangeDoc, petname: string) {
     changedoc((doc) => {
         const purl = generateAutomergeUrl();
-        doc.projects.set(purl, {petname} as ProjectMetadata);
+        doc.projects[purl] = { petname };
+    });
+}
+
+export function add_existing_project(changedoc: ChangeDoc, purl: AutomergeUrl, petname: string) {
+    changedoc((doc) => {
+        if (doc.projects[purl]) {
+            console.log("Project already exists");
+            return;
+        }
+        doc.projects[purl] = { petname };
     });
 }
 
 export function update_project_petname(changedoc: ChangeDoc, purl: AutomergeUrl, petname: string) {
     changedoc((doc) => {
-        if (!doc.projects.has(purl)) {
+        if (!doc.projects[purl]) {
             console.log("Project does not exist");
             return;
         }
@@ -50,10 +48,10 @@ export function update_project_petname(changedoc: ChangeDoc, purl: AutomergeUrl,
 
 export function delete_project(changedoc: ChangeDoc, purl: AutomergeUrl) {
     changedoc((doc) => {
-        if (!doc.projects.has(purl)) {
+        if(!doc.projects[purl]){
             console.log("Project does not exist");
             return;
         }
-        doc.projects.delete(purl);
+        delete doc.projects[purl];
     });
 }

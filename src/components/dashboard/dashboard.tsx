@@ -1,5 +1,5 @@
 import { FC} from "react";
-import { Project } from "../project/project";
+//import { Project } from "../project/project";
 import { DashboardSettings } from "./settings";
 import { Label } from "../ui/label";
 import { object_map } from "@/lib/utils";
@@ -16,7 +16,7 @@ const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
   return (
     <div className="bg-background flex flex-col h-screen">
       <div className="flex flex-row justify-between items-center">
-        <DashboardSettings url={url}/>
+        <DashboardSettings dashboard_url={url}/>
         <Label className="text-xl justify-center">
           {dashboard.name}
         </Label>
@@ -24,7 +24,10 @@ const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
       <ul className="flex flex-col gap-5">
         {object_map(dashboard.projects, (purl, { petname }) => {
           return (<li key={purl}>
-            <Project petname={petname} url={purl}/>
+            <div>
+              <div>{purl}</div>
+              <div>{petname}</div>
+            </div>
           </li>)
         })}
       </ul>
