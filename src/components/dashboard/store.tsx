@@ -1,9 +1,11 @@
-import {type AutomergeUrl, generateAutomergeUrl} from '@automerge/automerge-repo'
+import { Repo, type AutomergeUrl } from '@automerge/automerge-repo'
+import { useRepo } from '@automerge/automerge-repo-react-hooks';
 import { updateText } from '@automerge/automerge/next'
-import { ChangeFn, ChangeOptions} from "@automerge/automerge/slim/next"
+import { ChangeFn, ChangeOptions } from "@automerge/automerge/slim/next"
+import { Project, new_project } from "@/components/project/store";
 
 export type ProjectMetadata = {
-  petname: string;
+    petname: string;
 };
 
 export type Dashboard = {
@@ -11,7 +13,7 @@ export type Dashboard = {
     projects: { [key: AutomergeUrl]: ProjectMetadata };
 };
 
-type ChangeDoc = (changeFn : ChangeFn<Dashboard>, options?: ChangeOptions<Dashboard>) => void;
+type ChangeDoc = (changeFn: ChangeFn<Dashboard>, options?: ChangeOptions<Dashboard>) => void;
 
 export function update_dashboard_title(changedoc: ChangeDoc, title: string) {
     changedoc((doc) => {
@@ -19,10 +21,10 @@ export function update_dashboard_title(changedoc: ChangeDoc, title: string) {
     });
 }
 
-export function create_new_project(changedoc: ChangeDoc, petname: string) {
+export function create_new_project(repo: Repo, changedoc: ChangeDoc, petname: string) {
     changedoc((doc) => {
-        const purl = generateAutomergeUrl();
-        doc.projects[purl] = { petname };
+        const purl = repo.create<Project>(new_project());
+        doc.projects[purl.url] = { petname };
     });
 }
 
@@ -48,7 +50,7 @@ export function update_project_petname(changedoc: ChangeDoc, purl: AutomergeUrl,
 
 export function delete_project(changedoc: ChangeDoc, purl: AutomergeUrl) {
     changedoc((doc) => {
-        if(!doc.projects[purl]){
+        if (!doc.projects[purl]) {
             console.log("Project does not exist");
             return;
         }

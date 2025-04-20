@@ -29,6 +29,7 @@
     "@tailwindcss/vite": "^4.1.3",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@y-sweet/sdk": "^0.8.2",
     "class-variance-authority": "^0.7.1",

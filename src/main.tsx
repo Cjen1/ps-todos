@@ -23,10 +23,8 @@ const hashDocUrl = hashParams.get('doc');
 let handle
 if (isValidAutomergeUrl(hashDocUrl)) {
   handle = repo.find(hashDocUrl);
-  console.log("Found doc", handle);
 } else {
   handle = repo.create<Dashboard>({name: "TBD", projects: {}});
-  console.log("Created new", handle);
 }
 const docUrl = handle.url 
 hashParams.set('doc', docUrl);

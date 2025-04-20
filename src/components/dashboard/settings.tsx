@@ -1,14 +1,14 @@
-import {FC, useState} from "react";
-import { Button } from "../ui/button";
-import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "../ui/sheet";
-import { Input } from "../ui/input";
+import { FC, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
 import { create_new_project, Dashboard, delete_project, ProjectMetadata, update_dashboard_title, update_project_petname } from "./store";
 import { Menu } from "lucide-react";
-import { Label } from "../ui/label";
-import { Separator } from "../ui/separator";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { AutomergeUrl } from "@automerge/automerge-repo";
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "../ui/dialog";
+import { useDocument, useRepo } from "@automerge/automerge-repo-react-hooks";
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { object_map } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
 
@@ -25,7 +25,7 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
 
   return (
     <li key={purl} className="flex flex-col gap-2">
-      <Label className="justify-center">{purl}</Label>
+      <div className="justify-center">{purl}</div>
       <div className="flex flex-row gap-2">
         <Label className="">Petname</Label>
         <Input
@@ -34,7 +34,9 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
         />
       </div>
       <Dialog>
-        <DialogTrigger>Delete</DialogTrigger>
+        <DialogTrigger asChild>
+          <Button variant="outline">Delete</Button>
+        </DialogTrigger>
         <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Delete Project</DialogTitle>
@@ -52,9 +54,10 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
 };
 
 export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboard_url }) => {
+  const repo = useRepo();
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
   if (!dashboard) {
-    return <Label>Error: url invalid</Label>
+    return <div>Error: url invalid</div>
   }
 
   const [input_new_project_petname, update_input_new_project_petname] = useState("");
@@ -69,7 +72,7 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
           <SheetTitle>Dashboard Settings</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-3 px-2">
-          <Separator />
+          <Separator/>
           <div className="flex flex-row gap-2">
             <Label className="">Title</Label>
             <Input
@@ -77,22 +80,22 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               onChange={(event) => update_dashboard_title(changeDoc, event.target.value)}
             />
           </div>
-          <Separator />
+          <Separator/>
           <div className="flex flex-row gap-2">
-            <Input 
-              placeholder="Petname" 
-              className="" 
+            <Input
+              placeholder="Petname"
+              className=""
               value={input_new_project_petname}
-              onChange={(event) => update_input_new_project_petname(event.target.value)}/>
+              onChange={(event) => update_input_new_project_petname(event.target.value)} />
             <Button
               variant="outline"
               className=""
-              onClick={() => create_new_project(changeDoc, input_new_project_petname)}
+              onClick={() => create_new_project(repo, changeDoc, input_new_project_petname)}
             >
               Create new project
             </Button>
           </div>
-          <Separator />
+          <Separator/>
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
               <Input placeholder="Petname" className="" />
@@ -102,9 +105,13 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               Add existing project
             </Button>
           </div>
-          <Separator />
           {object_map(dashboard.projects, (purl, _) => {
-            return (<SingleProjectSettings key={purl} dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />)
+            return (
+            <div key={purl} className="flex flex-col gap-2">
+              <Separator/>
+              <SingleProjectSettings  dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
+            </div>
+            )
           })}
         </div>
       </SheetContent>

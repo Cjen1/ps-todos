@@ -6,6 +6,7 @@ import { object_map } from "@/lib/utils";
 import { type AutomergeUrl} from "@automerge/automerge-repo";
 import { useDocument } from '@automerge/automerge-repo-react-hooks'
 import { type Dashboard } from "./store";
+import {Project} from "../project/project";
 
 const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
   const [dashboard, _] = useDocument<Dashboard>(url);
@@ -21,13 +22,10 @@ const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
           {dashboard.name}
         </Label>
       </div>
-      <ul className="flex flex-col gap-5">
+      <ul className="flex flex-col gap-4 px-2">
         {object_map(dashboard.projects, (purl, { petname }) => {
           return (<li key={purl}>
-            <div>
-              <div>{purl}</div>
-              <div>{petname}</div>
-            </div>
+            <Project project_url={purl as AutomergeUrl} petname={petname} />
           </li>)
         })}
       </ul>
