@@ -80,6 +80,14 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               onChange={(event) => update_dashboard_title(changeDoc, event.target.value)}
             />
           </div>
+          {object_map(dashboard.projects, (purl, _) => {
+            return (
+            <div key={purl} className="flex flex-col gap-2">
+              <Separator/>
+              <SingleProjectSettings  dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
+            </div>
+            )
+          })}
           <Separator/>
           <div className="flex flex-row gap-2">
             <Input
@@ -105,14 +113,6 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               Add existing project
             </Button>
           </div>
-          {object_map(dashboard.projects, (purl, _) => {
-            return (
-            <div key={purl} className="flex flex-col gap-2">
-              <Separator/>
-              <SingleProjectSettings  dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
-            </div>
-            )
-          })}
         </div>
       </SheetContent>
     </Sheet>
