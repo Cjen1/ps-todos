@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Task } from "@/components/task/task";
 
 export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ project_url, petname }) => {
-    const repo = useRepo();
     const [project, changeDoc] = useDocument<ProjectData>(project_url);
 
     if (!project) {
@@ -22,14 +21,17 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
                 return { order: order, task_url: task_url };
             }).sort((a, b) => a.order - b.order).map(({ task_url }) => {
                 return (
-                    <Task task_url={task_url as AutomergeUrl} />
+                    <Task
+                        key={task_url}
+                        project_url={project_url as AutomergeUrl}
+                        task_url={task_url as AutomergeUrl} />
                 );
             })}
             <Button
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={() => add_new_task(repo, changeDoc)}>
+                onClick={() => add_new_task(changeDoc)}>
                 Add Task
             </Button>
         </div>
