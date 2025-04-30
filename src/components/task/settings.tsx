@@ -54,11 +54,14 @@ export const Settings: React.FC<{
             </option>
           </select>
           {task.repeat && task.repeat.kind === 'incomplete-after' && (
-            <Input
-              type="number"
-              min="0"
-              value={task.repeat.duration}
-              onChange={(event) => update_repeat_task_duration(changeDoc, task_url, Number(event.target.value))} />
+            <div className="flex flex-row">
+              <Input
+                type="number"
+                min="0"
+                value={task.repeat.duration}
+                onChange={(event) => update_repeat_task_duration(changeDoc, task_url, Number(event.target.value))} />
+              <Label>days</Label>
+            </div>
           )}
         </div>
       </DialogContent>
