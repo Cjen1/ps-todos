@@ -1,5 +1,4 @@
 import { Repo, type AutomergeUrl } from '@automerge/automerge-repo'
-import { useRepo } from '@automerge/automerge-repo-react-hooks';
 import { updateText } from '@automerge/automerge/next'
 import { ChangeFn, ChangeOptions } from "@automerge/automerge/slim/next"
 import { Project, new_project } from "@/components/project/store";

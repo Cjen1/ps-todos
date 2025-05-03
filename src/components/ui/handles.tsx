@@ -1,3 +1,5 @@
+import { FC } from "react";
+
 export const DragHandle: FC = () => (
   <svg
     width="24"

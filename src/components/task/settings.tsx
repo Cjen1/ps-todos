@@ -7,7 +7,6 @@ import { AutomergeUrl } from '@automerge/automerge-repo';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Input } from '../ui/input';
 
 export const Settings: React.FC<{

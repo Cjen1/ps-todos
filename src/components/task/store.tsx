@@ -18,7 +18,8 @@ type ChangeDoc = (changeFn : ChangeFn<Project>, options?: ChangeOptions<Project>
 export function new_task() : Task {
     return {
         description: "",
-        completed: null
+        completed: null,
+        repeat: {kind: "none"}
     };
 }
 

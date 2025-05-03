@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
-import { create_new_project, Dashboard, delete_project, ProjectMetadata, update_dashboard_title, update_project_petname } from "./store";
+import { create_new_project, Dashboard, delete_project, update_dashboard_title, update_project_petname } from "./store";
 import { Menu } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";

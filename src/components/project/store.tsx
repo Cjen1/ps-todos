@@ -1,6 +1,6 @@
 import { ChangeFn, ChangeOptions } from "@automerge/automerge/slim/next"
 import { new_task, Task } from '@/components/task/store';
-import { Repo, AutomergeUrl, generateAutomergeUrl } from "@automerge/automerge-repo";
+import { AutomergeUrl, generateAutomergeUrl } from "@automerge/automerge-repo";
 
 export type ProjectMetadata = {
 };
@@ -42,7 +42,7 @@ function calculate_next_order(prev_order: number | null, next_order: number | nu
       low = Math.min(prev_order, next_order);
       high = Math.max(prev_order, next_order);
   } else if (prev_order || next_order) {
-      const v = prev_order ?? next_order;
+      const v = (prev_order ?? next_order) as number;
       low = Math.min(v, 0);
       high = Math.max(v, 1);
   } 
@@ -52,6 +52,6 @@ function calculate_next_order(prev_order: number | null, next_order: number | nu
 export function move_task(changeDoc: ChangeDoc, task_url: AutomergeUrl, prev_url: AutomergeUrl | null, next_url: AutomergeUrl | null) {
     changeDoc((doc) => {
       doc.tasks[task_url].order = 
-          calculate_next_order(prev_url ?? doc.tasks[prev_url]?.order, next_url ?? doc.tasks[next_url]?.order);
+          calculate_next_order(prev_url ? doc.tasks[prev_url]?.order : null, next_url ? doc.tasks[next_url]?.order : null);
     });
 }
