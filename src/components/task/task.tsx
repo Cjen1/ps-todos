@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { DragHandle, DeleteHandle } from "@/components/ui/handles";
 import { Project, delete_task} from "../project/store";
 import { Settings } from "./settings";
-import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { useSortable } from "@dnd-kit/sortable";
 
 export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({ project_url, task_url }) => {
     const [project, changeDoc] = useDocument<Project>(project_url);
@@ -18,10 +18,11 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
 
     const task = project.tasks[task_url].task;
 
-    const { attributes, listeners, setNodeRef, transform } =
-      useDraggable({ id: task_url});
+    const { attributes, listeners, setNodeRef, transform, transition } =
+      useSortable({ id: task_url});
     const transform_style = {
       transform: CSS.Translate.toString(transform),
+      transition,
     };
 
     const move_or_delete_handle = ! task.completed ? (
@@ -51,7 +52,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
             </div>
             <Input
                 type="text"
-                value={task.description}
+                value={task_url}
                 onChange={
                     (event) => update_task_description(changeDoc, task_url, event.target.value)
                 } />

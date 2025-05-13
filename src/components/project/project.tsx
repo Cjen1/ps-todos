@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Task } from "@/components/task/task";
 import { Separator } from "@/components/ui/separator";
 
-import { DroppableMarker } from "@/components/ui/dnd-marker.tsx";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ project_url, petname }) => {
     const [project, changeDoc] = useDocument<ProjectData>(project_url);
@@ -19,54 +19,48 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
     }
 
     const handleDragEnd = (event: DragEndEvent) => {
-      if (!event.over) {
-        return;
-      }
-      const data = event.over.data.current;
-      const doc_url = event.active.id.toString();
-      move_task(changeDoc, doc_url, data?.prev_id, data?.next_id);
+        if (!event.over) {
+            return;
+        }
+        const task_url = event.active.id.toString() as AutomergeUrl;
+        const over_url = event.over.id.toString() as AutomergeUrl;
+        move_task(changeDoc, task_url, over_url);
     };
 
     const task_list = object_map(
-      project.tasks, (task_url, { order }) => {
-        return { order: order, task_url: task_url };
-      }).sort((a, b) => a.order - b.order);
+        project.tasks, (task_url, { order }) => {
+            return { order: order, task_url: task_url };
+        }).sort((a, b) => a.order - b.order).map(({ task_url }) => task_url);
 
     return (
-        <DndContext onDragEnd={handleDragEnd}>
-            <div className="bg-card flex flex-col gap-2 p-2">
-                <Label className="justify-center">{petname}</Label>
-                <div>
-                {task_list.map(({ task_url }) => {
-                    return (
-                      <div key={task_url}>
-                        <DroppableMarker 
-                          className="pb-2" 
-                          pid={project_url}
-                          />
-                        <Task
-                            key={task_url}
-                            project_url={project_url as AutomergeUrl}
-                            task_url={task_url as AutomergeUrl} />
-                      </div>
-                    );
-                })}
-                  <DroppableMarker 
-                    className="pb-2"
-                    pid={project_url}
-                    />
-                </div>
-                <div className="py-1">
-                  <Separator/>
-                </div>
-                <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => add_new_task(changeDoc)}>
-                    Add Task
-                </Button>
+        <div className="bg-card flex flex-col gap-2 p-2">
+            <Label className="justify-center">{petname}</Label>
+            <div>
+                <DndContext onDragEnd={handleDragEnd}>
+                    <SortableContext items={task_list} strategy={verticalListSortingStrategy}>
+                        {task_list.map(( task_url ) => {
+                            return (
+                                <div key={task_url}>
+                                    <Task
+                                        key={task_url}
+                                        project_url={project_url as AutomergeUrl}
+                                        task_url={task_url as AutomergeUrl} />
+                                </div>
+                            );
+                        })}
+                    </SortableContext>
+                </DndContext>
             </div>
-        </DndContext>
+            <div className="py-1">
+                <Separator />
+            </div>
+            <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => add_new_task(changeDoc)}>
+                Add Task
+            </Button>
+        </div>
     );
 }
