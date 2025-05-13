@@ -52,7 +52,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
             </div>
             <Input
                 type="text"
-                value={task_url}
+                value={task.description}
                 onChange={
                     (event) => update_task_description(changeDoc, task_url, event.target.value)
                 } />
