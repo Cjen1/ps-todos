@@ -36,6 +36,7 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
         <DndContext onDragEnd={handleDragEnd}>
             <div className="bg-card flex flex-col gap-2 p-2">
                 <Label className="justify-center">{petname}</Label>
+                <div>
                 {task_list.map(({ task_url }) => {
                     return (
                       <div key={task_url}>
@@ -50,11 +51,12 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
                       </div>
                     );
                 })}
-                <div>
                   <DroppableMarker 
                     className="pb-2"
                     pid={project_url}
                     />
+                </div>
+                <div className="py-1">
                   <Separator/>
                 </div>
                 <Button

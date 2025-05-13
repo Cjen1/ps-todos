@@ -43,7 +43,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
     return (
         <li 
           key={task_url} 
-          className="flex flex-row gap-2 bg-card rounded" 
+          className="flex flex-row gap-2 p-1 bg-card rounded" 
           style={transform_style} 
           ref={setNodeRef}>
             <div className="flex items-center justify-center">
