@@ -15,7 +15,7 @@ export type Project = {
     tasks: { [key: AutomergeUrl]: TaskMetadata };
 };
 
-type ChangeDoc = (changeFn: ChangeFn<Project>, options?: ChangeOptions<Project>) => void;
+export type ChangeDoc = (changeFn: ChangeFn<Project>, options?: ChangeOptions<Project>) => void;
 
 export function add_new_task(changedoc: ChangeDoc) {
     const task_url = generateAutomergeUrl();

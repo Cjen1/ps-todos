@@ -1,13 +1,35 @@
 import * as React from 'react';
 import { LongPressCheckbox } from '@/components/ui/long-press-checkbox';
-import { RepeatTask, update_repeat_task_duration, update_repeat_task_type, update_task_completed } from './store';
+import { update_repeat_task_duration, update_repeat_task_type, update_task_completed } from './store';
 import { useDocument } from '@automerge/automerge-repo-react-hooks';
-import { Project } from '@/components/project/store';
+import { Project, ChangeDoc } from '@/components/project/store';
 import { AutomergeUrl } from '@automerge/automerge-repo';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+
+const if_expired_uncheck = (task_url: AutomergeUrl, project: Project, changeDoc: ChangeDoc) => {
+  const task = project.tasks[task_url];
+  if (!task?.task) return;
+  if (task.task.repeat == undefined) {
+    changeDoc((doc) => { doc.tasks[task_url].task.repeat = { kind: 'none' } });
+    return;
+  }
+  if (task.task.repeat.kind === 'incomplete-after' && task.task.completed !== null) {
+    const now = Date.now();
+    const completed = task.task.completed;
+    // Uncheck several hours before the task is due for better UX
+    const duration_ms = (task.task.repeat.duration - 0.3) * 24 * 60 * 60 * 1000;
+    const timeout = completed + duration_ms;
+    if (timeout < now) {
+      changeDoc((doc) => {
+        doc.tasks[task_url].task.completed = null;
+      });
+    }
+  }
+};
 
 export const Settings: React.FC<{
   project_url: AutomergeUrl,
@@ -19,6 +41,13 @@ export const Settings: React.FC<{
   }
 
   const task = project.tasks[task_url].task;
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if_expired_uncheck(task_url, project, changeDoc);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [task_url, project]);
 
   const [openSettings, setOpenSettings] = React.useState(false);
 
@@ -36,30 +65,31 @@ export const Settings: React.FC<{
         <div className="flex flex-col gap-2 px-2">
           <Separator />
           <Label>Repeat</Label>
-          <select
-            className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+          <Select
             value={task.repeat?.kind ?? 'none'}
-            onChange={(event) => {
-              const value = event.target.value as "none" | "incomplete-after";
-              update_repeat_task_type(changeDoc, task_url, value);
+            onValueChange={(value) => {
+              if (value == 'none' || value == 'incomplete-after') {
+                update_repeat_task_type(changeDoc, task_url, value);
+              }
             }}>
-            <option
-              value="none">
-              None
-            </option>
-            <option
-              value="incomplete-after">
-              Incomplete After
-            </option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              <SelectItem value="incomplete-after">Incomplete After</SelectItem>
+            </SelectContent>
+          </Select>
           {task.repeat && task.repeat.kind === 'incomplete-after' && (
-            <div className="flex flex-row">
+            <div className="flex flex-row gap-2">
               <Input
                 type="number"
                 min="0"
                 value={task.repeat.duration}
                 onChange={(event) => update_repeat_task_duration(changeDoc, task_url, Number(event.target.value))} />
-              <Label>days</Label>
+              <Label>
+                days
+              </Label>
             </div>
           )}
         </div>
