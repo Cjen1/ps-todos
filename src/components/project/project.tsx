@@ -52,7 +52,7 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
             <div className="bg-card flex flex-col gap-2 p-2">
                 <Label className="justify-center">{petname}</Label>
                 <div>
-                    <SortableContext items={task_list} strategy={verticalListSortingStrategy}>
+                    <SortableContext items={not_completed_tasks} strategy={verticalListSortingStrategy}>
                         {not_completed_tasks.map((task_url) => {
                             return (
                                 <div key={task_url}>
@@ -71,16 +71,18 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
                             <div className="py-1">
                                 <Separator />
                             </div>
-                            {completed_tasks.map((task_url) => {
-                                return (
-                                    <div key={task_url} className="w-full max-w-full">
-                                        <Task
-                                            key={task_url}
-                                            project_url={project_url as AutomergeUrl}
-                                            task_url={task_url as AutomergeUrl} />
-                                    </div>
-                                );
-                            })}
+                            <div className="max-h-32 overflow-y-auto pr-2">
+                                {completed_tasks.map((task_url) => {
+                                    return (
+                                        <div key={task_url} className="w-full max-w-full">
+                                            <Task
+                                                key={task_url}
+                                                project_url={project_url as AutomergeUrl}
+                                                task_url={task_url as AutomergeUrl} />
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </Fragment>
                     ) : (
                         null
