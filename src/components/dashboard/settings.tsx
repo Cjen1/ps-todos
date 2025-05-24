@@ -2,11 +2,11 @@ import { FC, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
-import { create_new_project, Dashboard, delete_project, update_dashboard_title, update_project_petname } from "./store";
+import { add_existing_project, create_new_project, Dashboard, delete_project, update_dashboard_title, update_project_petname } from "./store";
 import { Menu } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { AutomergeUrl } from "@automerge/automerge-repo";
+import { AutomergeUrl, isValidAutomergeUrl } from "@automerge/automerge-repo";
 import { useDocument, useRepo } from "@automerge/react";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { object_map } from "@/lib/utils";
@@ -58,18 +58,20 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
 
   const [input_new_project_petname, update_input_new_project_petname] = useState("");
+  const [input_existing_project_petname, update_input_existing_project_petname] = useState("");
+  const [input_existing_project_url, update_input_existing_project_url] = useState("");
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button><Menu/></button>
+        <button><Menu /></button>
       </SheetTrigger>
       <SheetContent side="left" aria-describedby={undefined}>
         <SheetHeader>
           <SheetTitle>Dashboard Settings</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-3 px-2">
-          <Separator/>
+          <Separator />
           <div className="flex flex-row gap-2">
             <Label className="">Title</Label>
             <Input
@@ -79,13 +81,13 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
           </div>
           {object_map(dashboard?.projects ?? {}, (purl, _) => {
             return (
-            <div key={purl} className="flex flex-col gap-2">
-              <Separator/>
-              <SingleProjectSettings  dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
-            </div>
+              <div key={purl} className="flex flex-col gap-2">
+                <Separator />
+                <SingleProjectSettings dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
+              </div>
             )
           })}
-          <Separator/>
+          <Separator />
           <div className="flex flex-row gap-2">
             <Input
               placeholder="Petname"
@@ -100,13 +102,19 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               Create new project
             </Button>
           </div>
-          <Separator/>
+          <Separator />
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
-              <Input placeholder="Petname" className="" />
-              <Input placeholder="Token" className="" />
+              <Input placeholder="Petname" className=""
+                onChange={(event) => update_input_existing_project_petname(event.target.value)} />
+              <Input placeholder="automerge:<token>" className=""
+                onChange={(event) => update_input_existing_project_url(event.target.value)} />
             </div>
-            <Button variant="outline" className="" onClick={() => console.log("Add existing project")}>
+            <Button variant="outline" className="" onClick={() => {
+              if (isValidAutomergeUrl(input_existing_project_url)) {
+                add_existing_project(changeDoc, input_existing_project_url, input_existing_project_petname)
+              }
+            }}>
               Add existing project
             </Button>
           </div>

@@ -22,7 +22,7 @@ export function LongPressCheckbox({
             type="button"
             className={cn(
                 "w-6 h-6 rounded-sm border-2 border-primary bg-card",
-                checked ? "bg-primary" : "bg-card",
+                !checked ? "bg-primary" : "bg-card",
                 className
             )}
             {...longPressCallbacks}

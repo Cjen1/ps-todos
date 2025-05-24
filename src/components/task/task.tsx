@@ -3,7 +3,6 @@ import { AutomergeUrl } from "@automerge/automerge-repo";
 import { Label } from "@/components/ui/label";
 import { useDocument } from "@automerge/react";
 import { update_task_description } from "./store";
-import { Input } from "@/components/ui/input";
 import { DragHandle, DeleteHandle } from "@/components/ui/handles";
 import { Project, delete_task} from "../project/store";
 import { Settings } from "./settings";
@@ -45,7 +44,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
     return (
         <li 
           key={task_url} 
-          className="flex flex-row gap-2 p-1 bg-card rounded" 
+          className="flex flex-row gap-2 p-1 bg-card rounded"
           style={transform_style} 
           ref={setNodeRef}>
             <div className="flex items-center justify-center">
@@ -54,10 +53,12 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
             <Textarea
                 ref={(textarea) => {
                     if (textarea) {
+                        textarea.style.height = '0px';
                         textarea.style.height = `${textarea.scrollHeight}px`;
                     }
                 }}
-                className="resize-none"
+                wrap="soft"
+                className="resize-none scrollbar-hidden w-full max-w-full"
                 value={task.description}
                 onChange={
                     (event) => update_task_description(changeDoc, task_url, event.target.value)
