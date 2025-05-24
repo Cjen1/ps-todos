@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type RefObject } from "react";
+import { useCallback, useRef, useState, type MutableRefObject } from "react";
 
 const useLongPress = (
   onLongPress: any,
@@ -6,8 +6,8 @@ const useLongPress = (
   { shouldPreventDefault = true, delay = 300 } = {}
 ) => {
   const [longPressTriggered, setLongPressTriggered] = useState(false);
-  const timeoutId: RefObject<NodeJS.Timeout | undefined> = useRef(undefined);
-  const target: RefObject<any> = useRef(undefined);
+  const timeoutId: MutableRefObject<NodeJS.Timeout | undefined> = useRef(undefined);
+  const target: MutableRefObject<any> = useRef(undefined);
 
   const start = useCallback(
     (event: any) => {

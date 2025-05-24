@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { LongPressCheckbox } from '@/components/ui/long-press-checkbox';
 import { update_repeat_task_duration, update_repeat_task_type, update_task_completed } from './store';
-import { useDocument } from '@automerge/automerge-repo-react-hooks';
+import { useDocument } from '@automerge/react';
 import { Project, ChangeDoc } from '@/components/project/store';
 import { AutomergeUrl } from '@automerge/automerge-repo';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';

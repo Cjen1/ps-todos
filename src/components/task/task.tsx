@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { AutomergeUrl } from "@automerge/automerge-repo";
 import { Label } from "@/components/ui/label";
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
+import { useDocument } from "@automerge/react";
 import { update_task_description } from "./store";
 import { Input } from "@/components/ui/input";
 import { DragHandle, DeleteHandle } from "@/components/ui/handles";

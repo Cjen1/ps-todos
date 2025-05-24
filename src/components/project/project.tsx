@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { AutomergeUrl, parseAutomergeUrl } from "@automerge/automerge-repo";
+import { AutomergeUrl } from "@automerge/automerge-repo";
 import { Label } from "@/components/ui/label";
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
+import { useDocument } from "@automerge/react";
 import { add_new_task, move_task, Project as ProjectData } from "./store";
 import { object_map } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

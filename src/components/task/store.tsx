@@ -1,5 +1,4 @@
-import { updateText } from '@automerge/automerge/next'
-import { ChangeFn, ChangeOptions} from "@automerge/automerge/slim/next"
+import { updateText, ChangeFn } from '@automerge/react'
 import { Project } from '../project/store';
 import { AutomergeUrl } from '@automerge/automerge-repo';
 
@@ -13,7 +12,7 @@ export type Task = {
     repeat: RepeatTask;
 }
 
-type ChangeDoc = (changeFn : ChangeFn<Project>, options?: ChangeOptions<Project>) => void;
+type ChangeDoc = (changeFn : ChangeFn<Project>, options?: any) => void;
 
 export function new_task() : Task {
     return {

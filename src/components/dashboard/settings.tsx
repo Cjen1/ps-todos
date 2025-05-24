@@ -7,7 +7,7 @@ import { Menu } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { AutomergeUrl } from "@automerge/automerge-repo";
-import { useDocument, useRepo } from "@automerge/automerge-repo-react-hooks";
+import { useDocument, useRepo } from "@automerge/react";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { object_map } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
@@ -56,9 +56,6 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
 export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboard_url }) => {
   const repo = useRepo();
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
-  if (!dashboard) {
-    return <div>Error: url invalid</div>
-  }
 
   const [input_new_project_petname, update_input_new_project_petname] = useState("");
 
@@ -76,11 +73,11 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
           <div className="flex flex-row gap-2">
             <Label className="">Title</Label>
             <Input
-              value={dashboard.name}
+              value={dashboard?.name}
               onChange={(event) => update_dashboard_title(changeDoc, event.target.value)}
             />
           </div>
-          {object_map(dashboard.projects, (purl, _) => {
+          {object_map(dashboard?.projects ?? {}, (purl, _) => {
             return (
             <div key={purl} className="flex flex-col gap-2">
               <Separator/>

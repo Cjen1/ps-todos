@@ -1,40 +1,39 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { isValidAutomergeUrl, Repo } from "@automerge/automerge-repo";
-import { IndexedDBStorageAdapter } from "@automerge/automerge-repo-storage-indexeddb";
+import { AutomergeUrl } from "@automerge/automerge-repo";
 import { Dashboard } from "./components/dashboard/store.tsx";
-import { RepoContext } from "@automerge/automerge-repo-react-hooks";
-import { Dashboard as App } from "./components/dashboard/dashboard.tsx";
+import { Dashboard as DashboardApp, App } from "./components/dashboard/dashboard.tsx";
+
+import {
+  isValidAutomergeUrl,
+  Repo,
+  WebSocketClientAdapter,
+  IndexedDBStorageAdapter,
+  RepoContext
+} from '@automerge/react'
 
 const repo = new Repo({
-  // network : ...
+  network: [new WebSocketClientAdapter("wss://sync.automerge.org")],
   storage: new IndexedDBStorageAdapter(),
-})
+});
 
-let hashParams
-if (window.location.hash === "") {
-  hashParams = new URLSearchParams();
-}
-else {
-  hashParams = new URLSearchParams(window.location.hash.substring(1));
-}
-const hashDocUrl = hashParams.get('doc');
-
-let handle
-if (isValidAutomergeUrl(hashDocUrl)) {
-  handle = repo.find(hashDocUrl);
+let rootDocUrl = `${document.location.hash.substring(1)}`;
+let handle;
+if (isValidAutomergeUrl(rootDocUrl)) {
+  console.log("Trying to find an existing document", rootDocUrl);
+  handle = await repo.find(rootDocUrl);
+  console.log("Found existing document", handle.url);
 } else {
-  handle = repo.create<Dashboard>({name: "TBD", projects: {}});
+  console.log("Local creation");
+  handle = repo.create<Dashboard>({ name: "TBD", projects: {} })
 }
-const docUrl = handle.url 
-hashParams.set('doc', docUrl);
-console.log("hashParams", hashParams.toString());
-window.location.hash = hashParams.toString();
+
+const docUrl = document.location.hash = handle.url;
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <RepoContext.Provider value={repo}>
-      <App url={docUrl} />
+      <DashboardApp url={docUrl as AutomergeUrl} />
     </RepoContext.Provider>
   </React.StrictMode>
 );

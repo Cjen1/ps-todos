@@ -1,4 +1,4 @@
-import { ChangeFn, ChangeOptions } from "@automerge/automerge/slim/next"
+import { ChangeFn } from "@automerge/react"
 import { new_task, Task } from '@/components/task/store';
 import { AutomergeUrl, generateAutomergeUrl } from "@automerge/automerge-repo";
 import { object_map } from "@/lib/utils";
@@ -15,7 +15,7 @@ export type Project = {
     tasks: { [key: AutomergeUrl]: TaskMetadata };
 };
 
-export type ChangeDoc = (changeFn: ChangeFn<Project>, options?: ChangeOptions<Project>) => void;
+export type ChangeDoc = (changeFn: ChangeFn<Project>, options?: any) => void;
 
 export function add_new_task(changedoc: ChangeDoc) {
     const task_url = generateAutomergeUrl();

@@ -1,6 +1,4 @@
-import { Repo, type AutomergeUrl } from '@automerge/automerge-repo'
-import { updateText } from '@automerge/automerge/next'
-import { ChangeFn, ChangeOptions } from "@automerge/automerge/slim/next"
+import { Repo, type AutomergeUrl, updateText, ChangeFn } from '@automerge/react'
 import { Project, new_project } from "@/components/project/store";
 
 export type ProjectMetadata = {
@@ -12,7 +10,7 @@ export type Dashboard = {
     projects: { [key: AutomergeUrl]: ProjectMetadata };
 };
 
-type ChangeDoc = (changeFn: ChangeFn<Dashboard>, options?: ChangeOptions<Dashboard>) => void;
+type ChangeDoc = (changeFn: ChangeFn<Dashboard>, options?: any) => void;
 
 export function update_dashboard_title(changedoc: ChangeDoc, title: string) {
     changedoc((doc) => {
