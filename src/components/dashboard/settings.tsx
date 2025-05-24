@@ -3,17 +3,43 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { add_existing_project, create_new_project, Dashboard, delete_project, update_dashboard_title, update_project_petname } from "./store";
-import { Menu } from "lucide-react";
+import { Menu, Download } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { AutomergeUrl, isValidAutomergeUrl } from "@automerge/automerge-repo";
-import { useDocument, useRepo } from "@automerge/react";
+import { useDocument, useRepo, Repo, AutomergeUrl, isValidAutomergeUrl} from "@automerge/react";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { object_map } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Project } from "@/components/project/store";
+
+const exportProject = async (repo: Repo, purl: AutomergeUrl) => {
+  const project_promise = await repo.find<Project>(purl);
+  if (!project_promise) {
+    console.error("Project not found in repo:", purl);
+    return;
+  }
+  const project = await project_promise.doc();
+  if (!project) {
+    console.error("Project not found:", purl);
+    return;
+  }
+
+  console.log(project);
+  
+  const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `project-${purl}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
 
 const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUrl }> = ({ dashboard_url, purl }) => {
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
+  const repo : Repo = (useRepo() as any) as Repo;
+
   const project = dashboard?.projects[purl];
   if (!dashboard || !project) {
     return (
@@ -32,6 +58,10 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
           value={project.petname}
           onChange={(event) => update_project_petname(changeDoc, purl, event.target.value)}
         />
+        <button
+          onClick={() => exportProject(repo, purl)}>
+          <Download/>
+        </button>
       </div>
       <Dialog>
         <DialogTrigger asChild>
