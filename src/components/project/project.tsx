@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { Fragment, FC } from "react";
 import { AutomergeUrl } from "@automerge/automerge-repo";
 import { Label } from "@/components/ui/label";
 import { useDocument } from "@automerge/react";
@@ -33,13 +33,23 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
             return { order: order, task_url: task_url };
         }).sort((a, b) => a.order - b.order).map(({ task_url }) => task_url);
 
+    const not_completed_tasks = task_list.filter((task_url) => {
+        const task = project.tasks[task_url];
+        return task && task.task && task.task.completed === null;
+    });
+
+    const completed_tasks = task_list.filter((task_url) => {
+        const task = project.tasks[task_url];
+        return task && task.task && task.task.completed !== null;
+    });
+
     return (
         <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
             <div className="bg-card flex flex-col gap-2 p-2">
                 <Label className="justify-center">{petname}</Label>
                 <div>
                     <SortableContext items={task_list} strategy={verticalListSortingStrategy}>
-                        {task_list.map((task_url) => {
+                        {not_completed_tasks.map((task_url) => {
                             return (
                                 <div key={task_url}>
                                     <Task
@@ -51,6 +61,29 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
                         })}
                     </SortableContext>
                 </div>
+                {
+                    (completed_tasks.length > 0) ? (
+                        <Fragment>
+                            <div className="py-1">
+                                <Separator />
+                            </div>
+                            <div>
+                                {completed_tasks.map((task_url) => {
+                                    return (
+                                        <div key={task_url}>
+                                            <Task
+                                                key={task_url}
+                                                project_url={project_url as AutomergeUrl}
+                                                task_url={task_url as AutomergeUrl} />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </Fragment>
+                    ) : (
+                        null
+                    )
+                }
                 <div className="py-1">
                     <Separator />
                 </div>

@@ -9,6 +9,7 @@ import { Project, delete_task} from "../project/store";
 import { Settings } from "./settings";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
+import { Textarea } from "@/components/ui/textarea";
 
 export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({ project_url, task_url }) => {
     const [project, changeDoc] = useDocument<Project>(project_url);
@@ -50,12 +51,18 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
             <div className="flex items-center justify-center">
                 <Settings project_url={project_url} task_url={task_url} />
             </div>
-            <Input
-                type="text"
+            <Textarea
+                ref={(textarea) => {
+                    if (textarea) {
+                        textarea.style.height = `${textarea.scrollHeight}px`;
+                    }
+                }}
+                className="resize-none"
                 value={task.description}
                 onChange={
                     (event) => update_task_description(changeDoc, task_url, event.target.value)
-                } />
+                }
+            />
             <div className="flex items-center justify-center">
                 {move_or_delete_handle}
             </div>

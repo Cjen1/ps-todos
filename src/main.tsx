@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { AutomergeUrl } from "@automerge/automerge-repo";
 import { Dashboard } from "./components/dashboard/store.tsx";
-import { Dashboard as DashboardApp, App } from "./components/dashboard/dashboard.tsx";
+import { Dashboard as DashboardApp } from "./components/dashboard/dashboard.tsx";
 
 import {
   isValidAutomergeUrl,

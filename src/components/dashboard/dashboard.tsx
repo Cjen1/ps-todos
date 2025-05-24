@@ -13,7 +13,7 @@ const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
 
   return (
     <div className="bg-background flex flex-col h-screen">
-      <div className="flex flex-row justify-between items-center px-2">
+      <div className="flex flex-row justify-between items-center px-2 py-1">
         <DashboardSettings dashboard_url={url} />
         <Label className="text-xl justify-center">
           {dashboard?.name}

@@ -20,7 +20,13 @@ export type ChangeDoc = (changeFn: ChangeFn<Project>, options?: any) => void;
 export function add_new_task(changedoc: ChangeDoc) {
     const task_url = generateAutomergeUrl();
     changedoc((doc) => {
-        doc.tasks[task_url] = { order: 0, task: new_task() };
+        const sorted_tasks = object_map(
+            doc.tasks, (task_url, { order }) => {
+                return { order: order, task_url: task_url };
+            }).sort((a, b) => a.order - b.order);
+        const last_order = sorted_tasks.length > 0 ? sorted_tasks[sorted_tasks.length - 1].order : 0;
+        const new_order = Math.random() * (1 - last_order) * 0.1 + last_order;
+        doc.tasks[task_url] = { order: new_order, task: new_task() };
     });
 }
 
@@ -55,7 +61,7 @@ export function move_task(changeDoc: ChangeDoc, task_url: AutomergeUrl, over_url
         const active_order = doc.tasks[task_url].order;
         const over_order = doc.tasks[over_url].order;
 
-        if (active_order === over_order) {
+        if (task_url === over_url) {
             return;
         }
         const sorted_tasks = object_map(
