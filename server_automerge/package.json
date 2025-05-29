@@ -1,0 +1,21 @@
+{
+  "name": "serve ps-todo and a sync server",
+  "version": "0.0.1",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@automerge/automerge-repo": "^2.0.0",
+    "@automerge/automerge-repo-network-websocket": "^2.0.0",
+    "@automerge/automerge-repo-storage-nodefs": "^2.0.0",
+    "express": "^5.1.0",
+    "express-ws": "^5.0.2",
+    "ws": "^8.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
