@@ -1,0 +1,8 @@
+{
+  "database": "./amrg",
+  "port": 5000,
+  "dashboards": {
+    "#automerge:36PE2NE4EC2BBsJQEeDxr8Zq41MH" : "testing"
+  },
+  "application": "../dist"
+}

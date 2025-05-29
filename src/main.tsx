@@ -12,8 +12,10 @@ import {
   RepoContext
 } from '@automerge/react'
 
+const protocol = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
 const repo = new Repo({
-  network: [new WebSocketClientAdapter("wss://sync.automerge.org")],
+  //network: [new WebSocketClientAdapter("wss://sync.automerge.org")],
+  network: [new WebSocketClientAdapter(`${protocol}localhost:5000/api/sync`)],
   storage: new IndexedDBStorageAdapter(),
 });
 
