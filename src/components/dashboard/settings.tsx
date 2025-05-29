@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { add_existing_project, create_new_project, Dashboard, delete_project, up
 import { Menu, Download } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useDocument, useRepo, Repo, AutomergeUrl, isValidAutomergeUrl} from "@automerge/react";
+import { useDocument, useRepo, Repo, AutomergeUrl, isValidAutomergeUrl } from "@automerge/react";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { object_map } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
@@ -25,7 +25,7 @@ const exportProject = async (repo: Repo, purl: AutomergeUrl) => {
   }
 
   console.log(project);
-  
+
   const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -35,10 +35,31 @@ const exportProject = async (repo: Repo, purl: AutomergeUrl) => {
   a.click();
   document.body.removeChild(a);
 }
+const uploadProject = async (repo: Repo, changeDoc: any, file: File) => {
+  try {
+    const text = await file.text();
+    const projectData = JSON.parse(text);
+    const handle = repo.create<Project>(projectData);
+    const purl = handle.url;
+
+    const petname = file.name.replace(/\.json$/i, '');
+    changeDoc((doc: Dashboard) => {
+      if (!doc.projects) {
+        doc.projects = {};
+      }
+      doc.projects[purl] = {
+        petname: petname,
+      };
+    });
+    console.log("Project uploaded successfully:", purl);
+  } catch (error) {
+    console.error("Error uploading project:", error);
+  }
+}
 
 const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUrl }> = ({ dashboard_url, purl }) => {
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
-  const repo : Repo = (useRepo() as any) as Repo;
+  const repo: Repo = (useRepo() as any) as Repo;
 
   const project = dashboard?.projects[purl];
   if (!dashboard || !project) {
@@ -60,7 +81,7 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
         />
         <button
           onClick={() => exportProject(repo, purl)}>
-          <Download/>
+          <Download />
         </button>
       </div>
       <Dialog>
@@ -90,6 +111,18 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   const [input_new_project_petname, update_input_new_project_petname] = useState("");
   const [input_existing_project_petname, update_input_existing_project_petname] = useState("");
   const [input_existing_project_url, update_input_existing_project_url] = useState("");
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === "application/json") {
+      uploadProject(repo, changeDoc, file);
+    } else if (file) {
+      alert("Please select a valid JSON file.");
+    }
+    // Reset the file input
+    event.target.value = "";
+  };
 
   return (
     <Sheet>
@@ -146,6 +179,23 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               }
             }}>
               Add existing project
+            </Button>
+          </div>
+          <Separator />
+          <div className="flex flex-row gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+            <Button
+              className="w-full"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Upload project
             </Button>
           </div>
         </div>
