@@ -12,14 +12,15 @@ import {
   RepoContext
 } from '@automerge/react'
 
+let rootDocUrl = `${document.location.hash.substring(1)}`;
+
 const protocol = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
+const sync_url = `${protocol}localhost:5000/api/sync?dashboard=${rootDocUrl}`
 const repo = new Repo({
-  //network: [new WebSocketClientAdapter("wss://sync.automerge.org")],
-  network: [new WebSocketClientAdapter(`${protocol}localhost:5000/api/sync`)],
+  network: [new WebSocketClientAdapter(sync_url)],
   storage: new IndexedDBStorageAdapter(),
 });
 
-let rootDocUrl = `${document.location.hash.substring(1)}`;
 let handle;
 if (isValidAutomergeUrl(rootDocUrl)) {
   console.log("Trying to find an existing document", rootDocUrl);

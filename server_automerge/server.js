@@ -1,6 +1,12 @@
+import { webcrypto } from 'node:crypto';
+
+// Polyfill crypto.getRandomValues for Automerge
+if (!globalThis.crypto) {
+  globalThis.crypto = webcrypto;
+}
+
 import * as fs from 'fs'
 import express from "express";
-import expressWebsockets from "express-ws";
 import { WebSocketServer } from "ws";
 import { Repo } from "@automerge/automerge-repo";
 import { NodeWSServerAdapter } from "@automerge/automerge-repo-network-websocket";
@@ -31,30 +37,43 @@ if (!config.application) {
   throw new Error("Missing application field in config");
 }
 
-// Serve the app from a relative path
-const { app } = expressWebsockets(express());
+// Create express app without express-ws since we're handling WebSockets manually
+const app = express();
 app.use(express.static(config.application));
 
-const socket = new WebSocketServer({
+// Create WebSocket server
+const wss = new WebSocketServer({
   noServer: true,
 });
 
 // automerge repo config
 const repo = new Repo({
-  network: [new NodeWSServerAdapter(socket)],
-  //storage: new NodeFSStorageAdapter(config.database),
+  network: [new NodeWSServerAdapter(wss)],
+  storage: new NodeFSStorageAdapter(config.database),
   sharePolicy: async () => false, // Don't actively share any documents
 });
 
-app.on("connection", (ws, req) => {
-  console.log(`New connection from ${req.socket.remoteAddress} to ${req.url}`);
-});
+// Create HTTP server
+const server = app.listen(config.port, () => 
+  console.log("Listening on http://127.0.0.1:" + config.port)
+);
 
-app.on("upgrade", (request, socket, head) => {
-  console.log("Received websocket upgrade request to " + request.url);
-  wss.handleUpgrade(request, socket, head, (socket) => {
-    wss.emit("connection", socket, request);
+// Handle WebSocket upgrades
+server.on("upgrade", (request, socket, head) => {
+  const url = new URL(request.url, `http://${request.headers.host}`);
+  const dashboard = url.searchParams.get("dashboard");
+
+  if (!dashboard || !(dashboard in config.dashboards)) {
+    console.error(`Unauthorized access attempt to dashboard: ${dashboard} from ${request.socket.remoteAddress}`);
+    socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
+    socket.destroy();
+    return;
+  }
+
+  console.log(`WebSocket connection for dashboard: ${dashboard} from ${request.socket.remoteAddress}`);
+
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit("connection", ws, request);
   });
 });
 
-app.listen(config.port, () => console.log("Listening on http://127.0.0.1:" + config.port));
