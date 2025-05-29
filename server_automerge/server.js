@@ -20,6 +20,8 @@ if (args.length > 1) {
   config.database = args[1]
 }
 
+console.log(config)
+
 if (!config.database) {
   throw new Error("Missing database field in config");
 }
@@ -36,6 +38,8 @@ if (!config.dashboards) {
 if (!config.application) {
   throw new Error("Missing application field in config");
 }
+
+console.log("Supported dashboards: ", config.dashboards);
 
 // Create express app without express-ws since we're handling WebSockets manually
 const app = express();
@@ -63,7 +67,14 @@ server.on("upgrade", (request, socket, head) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
   const dashboard = url.searchParams.get("dashboard");
 
-  if (!dashboard || !(dashboard in config.dashboards)) {
+  if (!dashboard) {
+    console.error(`Unable to parse dashboard from websocket request: ${url}`)
+    socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
+    socket.destroy();
+    return;
+  }
+
+  if (!(dashboard in config.dashboards)) {
     console.error(`Unauthorized access attempt to dashboard: ${dashboard} from ${request.socket.remoteAddress}`);
     socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
     socket.destroy();
