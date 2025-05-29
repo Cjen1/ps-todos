@@ -1,22 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AutomergeUrl } from "@automerge/automerge-repo";
+import { Repo, AutomergeUrl, isValidAutomergeUrl } from "@automerge/automerge-repo";
 import { Dashboard } from "./components/dashboard/store.tsx";
 import { Dashboard as DashboardApp } from "./components/dashboard/dashboard.tsx";
 
 import {
-  isValidAutomergeUrl,
-  Repo,
+//  isValidAutomergeUrl,
+//  Repo,
   WebSocketClientAdapter,
   IndexedDBStorageAdapter,
   RepoContext
 } from '@automerge/react'
+//import { WebSocketClientAdapter } from '@automerge/automerge-repo-network-websocket'
 
 let rootDocUrl = `${document.location.hash.substring(1)}`;
 
-//const protocol = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
-//const sync_url = `${protocol}${window.location.host}/api/sync`;
-const sync_url = `wss://sync.automerge.org`;
+const protocol = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
+const sync_url = `${protocol}${window.location.host}/api/sync?dashboard=${rootDocUrl}`;
+//const sync_url = `wss://sync.automerge.org`;
 const repo = new Repo({
   network: [new WebSocketClientAdapter(sync_url)],
   storage: new IndexedDBStorageAdapter(),
