@@ -51,6 +51,9 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
         <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
             <div className="bg-card flex flex-col gap-2 p-2">
                 <Label className="justify-center">{petname}</Label>
+                <div className="py-1">
+                    <Separator />
+                </div>
                 <div>
                     <SortableContext items={not_completed_tasks} strategy={verticalListSortingStrategy}>
                         {not_completed_tasks.map((task_url) => {

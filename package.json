@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev-websocket": "y-websocket --port 1234",
     "build": "tsc -b && vite build",
     "serve": "npm run build && cd server_automerge && pnpm run start ./config.json",
     "lint": "eslint .",
