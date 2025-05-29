@@ -65,6 +65,14 @@ const server = app.listen(config.port, () =>
 // Handle WebSocket upgrades
 server.on("upgrade", (request, socket, head) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
+
+  // Check if the request is for the /api/sync path
+  if (url.pathname !== '/api/sync') {
+    socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
+    socket.destroy();
+    return;
+  }
+
   const dashboard = url.searchParams.get("dashboard");
 
   if (!dashboard) {

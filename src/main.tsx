@@ -14,8 +14,9 @@ import {
 
 let rootDocUrl = `${document.location.hash.substring(1)}`;
 
-const protocol = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
-const sync_url = `${protocol}localhost:5000/api/sync?dashboard=${rootDocUrl}`
+//const protocol = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
+//const sync_url = `${protocol}${window.location.host}/api/sync`;
+const sync_url = `wss://sync.automerge.org`;
 const repo = new Repo({
   network: [new WebSocketClientAdapter(sync_url)],
   storage: new IndexedDBStorageAdapter(),

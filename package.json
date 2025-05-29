@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "serve": "npm run build && cd server_automerge && pnpm run start ./config.json",
+    "serve": "pnpm run build && cd server_automerge && pnpm run start ./config.json",
     "lint": "eslint .",
     "preview": "vite preview"
   },

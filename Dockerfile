@@ -31,7 +31,8 @@ ENV STORE=/data/amrg
 USER docker:docker
 
 RUN pnpm install
+RUN cd server_automerge && pnpm install
 
 ENTRYPOINT ["fixuid"]
 
-CMD ["sh", "-c", "pnpm run serve -- $CONFIG $STORE"] 
+CMD ["sh", "-c", "pnpm run build && cd server_automerge && node server.js $CONFIG $STORE"] 
