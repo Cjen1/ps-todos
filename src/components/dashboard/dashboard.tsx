@@ -10,6 +10,7 @@ import { Project } from "../project/project";
 
 const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
   const [dashboard, _] = useDocument<Dashboard>(url);
+  window.document.title = dashboard?.name ?? "Dashboard";
 
   return (
     <div className="bg-background flex flex-col h-screen">
