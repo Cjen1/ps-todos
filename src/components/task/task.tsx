@@ -55,6 +55,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
                     if (textarea) {
                         textarea.style.height = '0px';
                         textarea.style.height = `${textarea.scrollHeight}px`;
+                        textarea.style.overflow = 'hidden';
                     }
                 }}
                 wrap="soft"
