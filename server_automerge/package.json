@@ -8,12 +8,12 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
-    "@automerge/automerge-repo": "^2.0.0",
-    "@automerge/automerge-repo-network-websocket": "^2.0.0",
-    "@automerge/automerge-repo-storage-nodefs": "^2.0.0",
+    "@automerge/automerge-repo": "^2.2.0",
+    "@automerge/automerge-repo-network-websocket": "^2.2.0",
+    "@automerge/automerge-repo-storage-nodefs": "^2.2.0",
     "express": "^5.1.0",
     "express-ws": "^5.0.2",
-    "ws": "^8.18.2"
+    "ws": "^8.18.3"
   },
   "engines": {
     "node": ">=18.0.0"

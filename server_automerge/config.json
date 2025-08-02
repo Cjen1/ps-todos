@@ -2,7 +2,8 @@
   "database": "./.amrg",
   "port": 5000,
   "dashboards": {
-    "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V" : "testing"
+    "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V" : "testing",
+    "automerge:3Ce1E9ZnwwGXeV3pyoMNHQWvnGSJ" : "testing2"
   },
   "application": "../dist"
 }

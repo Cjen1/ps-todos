@@ -28,7 +28,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
     const move_or_delete_handle = ! task.completed ? (
         <button
             type="button"
-            className=""
+            className="touch-none"
             {...listeners}
             {...attributes}>
             <DragHandle />
@@ -65,7 +65,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
                     (event) => update_task_description(changeDoc, task_url, event.target.value)
                 }
             />
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center touch-none">
                 {move_or_delete_handle}
             </div>
         </li>

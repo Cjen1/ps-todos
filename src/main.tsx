@@ -11,7 +11,6 @@ import {
   IndexedDBStorageAdapter,
   RepoContext
 } from '@automerge/react'
-//import { WebSocketClientAdapter } from '@automerge/automerge-repo-network-websocket'
 
 let rootDocUrl = `${document.location.hash.substring(1)}`;
 

@@ -72,12 +72,13 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
 
   return (
     <li key={purl} className="flex flex-col gap-2">
-      <div className="justify-center">{purl}</div>
+      <div className="flex justify-center">{purl}</div>
       <div className="flex flex-row gap-2">
-        <Label className="">Petname</Label>
+        <Label className="w-fit">Petname</Label>
         <Input
           value={project.petname}
           onChange={(event) => update_project_petname(changeDoc, purl, event.target.value)}
+          className="flex"
         />
         <button
           onClick={() => exportProject(repo, purl)}>
@@ -125,15 +126,15 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   };
 
   return (
-    <Sheet>
+    <Sheet className="max-w-md w-fit">
       <SheetTrigger asChild>
         <button><Menu /></button>
       </SheetTrigger>
-      <SheetContent side="left" aria-describedby={undefined}>
+      <SheetContent side="left" className="max-w-md w-fit h-full" aria-describedby={undefined}>
         <SheetHeader>
           <SheetTitle>Dashboard Settings</SheetTitle>
         </SheetHeader>
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col overflow-y-auto gap-3 px-4 w-fit">
           <Separator />
           <div className="flex flex-row gap-2">
             <Label className="">Title</Label>

@@ -16,7 +16,7 @@ const Dashboard: FC<{ url: AutomergeUrl }> = ({ url }) => {
     <div className="bg-background flex flex-col h-screen">
       <div className="flex flex-row justify-between items-center px-2 py-4">
         <DashboardSettings dashboard_url={url} />
-        <Label className="text-xl justify-center">
+        <Label className="text-xl justify-center overflow-y-auto">
           {dashboard?.name}
         </Label>
         <Label>{dashboard ? "Connected" : "Loading"}</Label>
