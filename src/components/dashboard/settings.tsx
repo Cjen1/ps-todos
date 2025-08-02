@@ -126,7 +126,7 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   };
 
   return (
-    <Sheet className="max-w-md w-fit">
+    <Sheet>
       <SheetTrigger asChild>
         <button><Menu /></button>
       </SheetTrigger>
