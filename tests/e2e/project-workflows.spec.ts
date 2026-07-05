@@ -106,47 +106,73 @@ async function projectSettingsByPetname(page: Page, petname: string) {
 test("creates projects, reorders tasks, and re-adds an existing project", async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.goto("/");
-  await expect(page.getByText("Connected")).toBeVisible();
+  await test.step("load dashboard", async () => {
+    await page.goto("/");
+    await expect(page.getByText("Connected")).toBeVisible();
+  });
 
-  const firstProject = await createProject(page, "Project One");
-  await addTasks(firstProject, ["one", "two", "three", "four"]);
-  await expectTaskOrder(firstProject, ["one", "two", "three", "four"]);
+  let firstProject: Locator;
+  await test.step("create first project with four tasks", async () => {
+    firstProject = await createProject(page, "Project One");
+    await addTasks(firstProject, ["one", "two", "three", "four"]);
+    await expectTaskOrder(firstProject, ["one", "two", "three", "four"]);
+  });
 
-  await dragTask(firstProject, "two", "one");
-  await expectTaskOrder(firstProject, ["two", "one", "three", "four"]);
+  await test.step("reorder first project: middle task to top", async () => {
+    await dragTask(firstProject, "two", "one");
+    await expectTaskOrder(firstProject, ["two", "one", "three", "four"]);
+  });
 
-  await dragTask(firstProject, "four", "one");
-  await expectTaskOrder(firstProject, ["two", "four", "one", "three"]);
+  await test.step("reorder first project: bottom task to middle", async () => {
+    await dragTask(firstProject, "four", "one");
+    await expectTaskOrder(firstProject, ["two", "four", "one", "three"]);
+  });
 
-  await dragTask(firstProject, "two", "one");
-  await expectTaskOrder(firstProject, ["four", "one", "two", "three"]);
+  await test.step("reorder first project: top task to middle", async () => {
+    await dragTask(firstProject, "two", "one");
+    await expectTaskOrder(firstProject, ["four", "one", "two", "three"]);
+  });
 
-  await dragTask(firstProject, "three", "two");
-  await expectTaskOrder(firstProject, ["four", "one", "three", "two"]);
+  await test.step("reorder first project: bottom task to middle", async () => {
+    await dragTask(firstProject, "three", "two");
+    await expectTaskOrder(firstProject, ["four", "one", "three", "two"]);
+  });
 
-  const secondProject = await createProject(page, "Project Two");
-  await addTasks(secondProject, ["alpha", "beta", "gamma"]);
-  await expectTaskOrder(secondProject, ["alpha", "beta", "gamma"]);
+  let secondProject: Locator;
+  await test.step("create second project with three tasks", async () => {
+    secondProject = await createProject(page, "Project Two");
+    await addTasks(secondProject, ["alpha", "beta", "gamma"]);
+    await expectTaskOrder(secondProject, ["alpha", "beta", "gamma"]);
+  });
 
-  await dragTask(secondProject, "beta", "alpha");
-  await expectTaskOrder(secondProject, ["beta", "alpha", "gamma"]);
+  await test.step("reorder second project tasks", async () => {
+    await dragTask(secondProject, "beta", "alpha");
+    await expectTaskOrder(secondProject, ["beta", "alpha", "gamma"]);
+  });
 
-  await openSettings(page);
-  const secondProjectSettings = await projectSettingsByPetname(page, "Project Two");
-  const projectUrl = await secondProjectSettings.getByTestId("project-url").textContent();
-  expect(projectUrl).toBeTruthy();
+  let projectUrl: string;
+  await test.step("copy second project URL and delete project", async () => {
+    await openSettings(page);
+    const secondProjectSettings = await projectSettingsByPetname(page, "Project Two");
+    const maybeProjectUrl = await secondProjectSettings.getByTestId("project-url").textContent();
+    expect(maybeProjectUrl).toBeTruthy();
+    projectUrl = maybeProjectUrl as string;
 
-  await secondProjectSettings.getByTestId("delete-project").click();
-  await page.getByTestId("confirm-delete-project").click();
-  await expect(projectByName(page, "Project Two")).toHaveCount(0);
+    await secondProjectSettings.getByTestId("delete-project").click();
+    await page.getByTestId("confirm-delete-project").click();
+    await expect(projectByName(page, "Project Two")).toHaveCount(0);
+  });
 
-  await page.getByTestId("existing-project-petname").fill("Project Two Restored");
-  await page.getByTestId("existing-project-url").fill(projectUrl as string);
-  await page.getByTestId("add-existing-project").click();
-  await page.keyboard.press("Escape");
+  await test.step("re-add deleted project by URL", async () => {
+    await page.getByTestId("existing-project-petname").fill("Project Two Restored");
+    await page.getByTestId("existing-project-url").fill(projectUrl);
+    await page.getByTestId("add-existing-project").click();
+    await page.keyboard.press("Escape");
+  });
 
-  const restoredProject = projectByName(page, "Project Two Restored");
-  await expect(restoredProject).toBeVisible();
-  await expectTaskOrder(restoredProject, ["beta", "alpha", "gamma"]);
+  await test.step("verify restored project still has reordered tasks", async () => {
+    const restoredProject = projectByName(page, "Project Two Restored");
+    await expect(restoredProject).toBeVisible();
+    await expectTaskOrder(restoredProject, ["beta", "alpha", "gamma"]);
+  });
 });
