@@ -130,7 +130,7 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button data-testid="dashboard-settings-trigger"><Menu /></button>
+        <button type="button" data-testid="dashboard-settings-trigger"><Menu /></button>
       </SheetTrigger>
       <SheetContent side="left" className="max-w-md w-fit h-full" aria-describedby={undefined}>
         <SheetHeader>

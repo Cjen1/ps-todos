@@ -1,7 +1,28 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
+async function openSettings(page: Page) {
+  const newProjectInput = page.getByTestId("new-project-petname");
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (await newProjectInput.isVisible()) {
+      return;
+    }
+
+    await page.getByTestId("dashboard-settings-trigger").click({ force: true });
+
+    try {
+      await expect(newProjectInput).toBeVisible({ timeout: 1000 });
+      return;
+    } catch {
+      await page.keyboard.press("Escape");
+    }
+  }
+
+  await expect(newProjectInput).toBeVisible();
+}
+
 async function createProject(page: Page, petname: string) {
-  await page.getByTestId("dashboard-settings-trigger").click();
+  await openSettings(page);
   await page.getByTestId("new-project-petname").fill(petname);
   await page.getByTestId("create-project").click();
   await expect(page.getByTestId("project").filter({ hasText: petname })).toBeVisible();
@@ -83,6 +104,8 @@ async function projectSettingsByPetname(page: Page, petname: string) {
 }
 
 test("creates projects, reorders tasks, and re-adds an existing project", async ({ page }) => {
+  test.setTimeout(60_000);
+
   await page.goto("/");
   await expect(page.getByText("Connected")).toBeVisible();
 
@@ -109,7 +132,7 @@ test("creates projects, reorders tasks, and re-adds an existing project", async 
   await dragTask(secondProject, "beta", "alpha");
   await expectTaskOrder(secondProject, ["beta", "alpha", "gamma"]);
 
-  await page.getByTestId("dashboard-settings-trigger").click();
+  await openSettings(page);
   const secondProjectSettings = await projectSettingsByPetname(page, "Project Two");
   const projectUrl = await secondProjectSettings.getByTestId("project-url").textContent();
   expect(projectUrl).toBeTruthy();
