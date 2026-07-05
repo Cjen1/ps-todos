@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -110,10 +110,51 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
 export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboard_url }) => {
   const repo = useRepo();
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
+  const [openSettings, setOpenSettings] = useState(false);
+  const sheetHistoryOpenRef = useRef(false);
+  const popClosingRef = useRef(false);
 
   const [input_new_project_petname, update_input_new_project_petname] = useState("");
   const [input_existing_project_petname, update_input_existing_project_petname] = useState("");
   const [input_existing_project_url, update_input_existing_project_url] = useState("");
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (!sheetHistoryOpenRef.current) {
+        return;
+      }
+
+      popClosingRef.current = true;
+      sheetHistoryOpenRef.current = false;
+      setOpenSettings(false);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (openSettings && !sheetHistoryOpenRef.current) {
+      const currentState = window.history.state;
+      const nextState = typeof currentState === "object" && currentState !== null
+        ? { ...currentState, dashboardSettingsOpen: true }
+        : { dashboardSettingsOpen: true };
+
+      window.history.pushState(nextState, "", window.location.href);
+      sheetHistoryOpenRef.current = true;
+      return;
+    }
+
+    if (!openSettings && popClosingRef.current) {
+      popClosingRef.current = false;
+      return;
+    }
+
+    if (!openSettings && sheetHistoryOpenRef.current) {
+      sheetHistoryOpenRef.current = false;
+      window.history.back();
+    }
+  }, [openSettings]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,7 +169,7 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   };
 
   return (
-    <Sheet>
+    <Sheet open={openSettings} onOpenChange={setOpenSettings}>
       <SheetTrigger asChild>
         <button type="button" data-testid="dashboard-settings-trigger"><Menu /></button>
       </SheetTrigger>
