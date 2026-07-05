@@ -71,23 +71,25 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
   }
 
   return (
-    <li key={purl} className="flex flex-col gap-2">
-      <div className="flex justify-center">{purl}</div>
+    <li key={purl} className="flex flex-col gap-2" data-testid="project-settings" data-project-id={purl}>
+      <div className="flex justify-center" data-testid="project-url">{purl}</div>
       <div className="flex flex-row gap-2">
         <Label className="w-fit">Petname</Label>
         <Input
           value={project.petname}
           onChange={(event) => update_project_petname(changeDoc, purl, event.target.value)}
           className="flex"
+          data-testid="project-petname"
         />
         <button
+          data-testid="export-project"
           onClick={() => exportProject(repo, purl)}>
           <Download />
         </button>
       </div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline">Delete</Button>
+          <Button variant="outline" data-testid="delete-project">Delete</Button>
         </DialogTrigger>
         <DialogContent aria-describedby={undefined}>
           <DialogHeader>
@@ -95,7 +97,7 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <Label>Are you sure you want to delete this project?</Label>
-            <Button variant="destructive" onClick={() => delete_project(changeDoc, purl)}>
+            <Button variant="destructive" data-testid="confirm-delete-project" onClick={() => delete_project(changeDoc, purl)}>
               Delete
             </Button>
           </div>
@@ -128,7 +130,7 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button><Menu /></button>
+        <button type="button" data-testid="dashboard-settings-trigger"><Menu /></button>
       </SheetTrigger>
       <SheetContent side="left" className="max-w-md w-fit h-full" aria-describedby={undefined}>
         <SheetHeader>
@@ -157,10 +159,12 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               placeholder="Petname"
               className=""
               value={input_new_project_petname}
+              data-testid="new-project-petname"
               onChange={(event) => update_input_new_project_petname(event.target.value)} />
             <Button
               variant="outline"
               className=""
+              data-testid="create-project"
               onClick={() => create_new_project(repo, changeDoc, input_new_project_petname)}
             >
               Create new project
@@ -170,11 +174,13 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
               <Input placeholder="Petname" className=""
+                data-testid="existing-project-petname"
                 onChange={(event) => update_input_existing_project_petname(event.target.value)} />
               <Input placeholder="automerge:<token>" className=""
+                data-testid="existing-project-url"
                 onChange={(event) => update_input_existing_project_url(event.target.value)} />
             </div>
-            <Button variant="outline" className="" onClick={() => {
+            <Button variant="outline" className="" data-testid="add-existing-project" onClick={() => {
               if (isValidAutomergeUrl(input_existing_project_url)) {
                 add_existing_project(changeDoc, input_existing_project_url, input_existing_project_petname)
               }

@@ -29,6 +29,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
         <button
             type="button"
             className="touch-none"
+            data-testid="task-drag-handle"
             {...listeners}
             {...attributes}>
             <DragHandle />
@@ -45,6 +46,8 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
         <li 
           key={task_url} 
           className="flex flex-row gap-2 p-1 bg-card rounded"
+          data-testid="task"
+          data-task-id={task_url}
           style={transform_style} 
           ref={setNodeRef}>
             <div className="flex items-center justify-center">
@@ -60,6 +63,7 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
                 }}
                 wrap="soft"
                 className="resize-none scrollbar-hidden w-full max-w-full"
+                data-testid="task-description"
                 value={task.description}
                 onChange={
                     (event) => update_task_description(changeDoc, task_url, event.target.value)

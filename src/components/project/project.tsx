@@ -49,8 +49,8 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
 
     return (
         <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
-            <div className="bg-card flex flex-col gap-2 p-2">
-                <Label className="justify-center">{petname}</Label>
+            <div className="bg-card flex flex-col gap-2 p-2" data-testid="project" data-project-id={project_url}>
+                <Label className="justify-center" data-testid="project-title">{petname}</Label>
                 <div className="py-1">
                     <Separator />
                 </div>
@@ -98,6 +98,7 @@ export const Project: FC<{ project_url: AutomergeUrl, petname: string }> = ({ pr
                     type="button"
                     variant="outline"
                     className="w-full"
+                    data-testid="add-task"
                     onClick={() => add_new_task(changeDoc)}>
                     Add Task
                 </Button>
