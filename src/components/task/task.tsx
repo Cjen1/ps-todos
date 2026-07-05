@@ -64,6 +64,12 @@ export const Task: FC<{ project_url: AutomergeUrl, task_url: AutomergeUrl}> = ({
                 onChange={
                     (event) => update_task_description(changeDoc, task_url, event.target.value)
                 }
+                onKeyDown={(event) => {
+                    if (event.key === "Backspace" && task.description.length === 0) {
+                        event.preventDefault();
+                        delete_task(changeDoc, task_url);
+                    }
+                }}
             />
             <div className="flex items-center justify-center touch-none">
                 {move_or_delete_handle}
