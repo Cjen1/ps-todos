@@ -82,10 +82,10 @@ export function delete_task(changeDoc: ChangeDoc, task_url: AutomergeUrl): void 
 function calculate_next_order(prev_order: number | null, next_order: number | null) {
     let low = 0;
     let high = 1;
-    if (prev_order && next_order) {
+    if (prev_order !== null && next_order !== null) {
         low = Math.min(prev_order, next_order);
         high = Math.max(prev_order, next_order);
-    } else if (prev_order || next_order) {
+    } else if (prev_order !== null || next_order !== null) {
         const v = (prev_order ?? next_order) as number;
         low = Math.min(v, 0);
         high = Math.max(v, 1);
