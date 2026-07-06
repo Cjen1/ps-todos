@@ -2,6 +2,11 @@
 
 Run and serve files with `npm run serve -- server/config.json`
 
+## Nix
+
+This repository provides a flake package and NixOS module for running the app as
+a systemd service. See [nix/README.md](nix/README.md).
+
 # Features or task list
 
 - [x] Multi-project
