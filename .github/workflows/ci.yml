@@ -14,6 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v31
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -33,6 +36,12 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Check flake
+        run: nix flake check
+
+      - name: Build flake package
+        run: nix build .#default
 
       - name: Run E2E tests
         run: pnpm run test:e2e
