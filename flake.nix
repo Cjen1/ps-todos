@@ -137,7 +137,7 @@
             fi
 
             tmp="$(mktemp)"
-            ${pkgs.jq}/bin/jq --slurp '.[0] * { dashboards: .[1] }' ${publicConfig} "$1" > "$tmp"
+            ${pkgs.jq}/bin/jq --slurp '.[0] * { dashboards: (.[1].dashboards // .[1]) }' ${publicConfig} "$1" > "$tmp"
             install -m 0640 "$tmp" ${runtimeConfig}
             rm "$tmp"
           '';
@@ -165,6 +165,12 @@
               description = "Group account that runs the ps-todos service.";
             };
 
+            createUser = lib.mkOption {
+              type = lib.types.bool;
+              default = true;
+              description = "Create the configured user and group as system accounts.";
+            };
+
             port = lib.mkOption {
               type = lib.types.port;
               default = 5000;
@@ -183,8 +189,10 @@
               example = "/run/credentials/ps-todos.service/dashboards.json";
               description = ''
                 Path to a private JSON file containing the allowed dashboard
-                Automerge URLs. The file must contain a JSON object such as:
+                Automerge URLs. The file may contain a JSON object such as:
                 `{ "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V": "personal" }`.
+                For compatibility with older deployments, a full ps-todos config
+                object with a `dashboards` attribute is also accepted.
 
                 This is intentionally read at service start instead of being
                 written to the Nix store.
@@ -205,8 +213,8 @@
           };
 
           config = lib.mkIf cfg.enable {
-            users.groups.${cfg.group} = { };
-            users.users.${cfg.user} = {
+            users.groups.${cfg.group} = lib.mkIf cfg.createUser { };
+            users.users.${cfg.user} = lib.mkIf cfg.createUser {
               isSystemUser = true;
               group = cfg.group;
               home = cfg.dataDir;

@@ -53,5 +53,18 @@ stored in `/nix/store`. It should be a JSON object:
 }
 ```
 
+For older deployments, `dashboardsFile` may also point at an existing full
+ps-todos config file; the module will read its `dashboards` attribute.
+
+If the service should run as an existing account, disable user creation:
+
+```nix
+services.ps-todos = {
+  user = "cjen1";
+  group = "users";
+  createUser = false;
+};
+```
+
 The NixOS module writes a runtime server config containing the packaged frontend
 path and starts `ps-todos-server` as a systemd service.
