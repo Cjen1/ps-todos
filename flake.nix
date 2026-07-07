@@ -122,11 +122,25 @@
       nixosModules.default = { config, lib, pkgs, ... }:
         let
           cfg = config.services.ps-todos;
-          configFile = pkgs.writeText "ps-todos-config.json" (builtins.toJSON (cfg.extraConfig // {
-            inherit (cfg) dashboards port;
+          publicConfig = pkgs.writeText "ps-todos-public-config.json" (builtins.toJSON (cfg.extraConfig // {
+            inherit (cfg) port;
             application = "${cfg.package}/share/ps-todos/application";
             database = cfg.dataDir;
           }));
+          runtimeConfig = "/run/ps-todos/config.json";
+          writeRuntimeConfig = pkgs.writeShellScript "ps-todos-write-config" ''
+            set -euo pipefail
+
+            if [ ! -r "$1" ]; then
+              echo "Dashboard config file is not readable: $1" >&2
+              exit 1
+            fi
+
+            tmp="$(mktemp)"
+            ${pkgs.jq}/bin/jq --slurp '.[0] * { dashboards: .[1] }' ${publicConfig} "$1" > "$tmp"
+            install -m 0640 "$tmp" ${runtimeConfig}
+            rm "$tmp"
+          '';
         in
         {
           options.services.ps-todos = {
@@ -163,19 +177,24 @@
               description = "Directory used for Automerge document storage.";
             };
 
-            dashboards = lib.mkOption {
-              type = lib.types.attrsOf lib.types.str;
-              default = { };
-              example = {
-                "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V" = "personal";
-              };
-              description = "Allowed dashboard Automerge URLs.";
+            dashboardsFile = lib.mkOption {
+              type = lib.types.str;
+              default = "${cfg.dataDir}/dashboards.json";
+              example = "/run/credentials/ps-todos.service/dashboards.json";
+              description = ''
+                Path to a private JSON file containing the allowed dashboard
+                Automerge URLs. The file must contain a JSON object such as:
+                `{ "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V": "personal" }`.
+
+                This is intentionally read at service start instead of being
+                written to the Nix store.
+              '';
             };
 
             extraConfig = lib.mkOption {
               type = lib.types.attrs;
               default = { };
-              description = "Additional JSON config passed to the ps-todos server.";
+              description = "Additional non-secret JSON config passed to the ps-todos server.";
             };
 
             openFirewall = lib.mkOption {
@@ -201,12 +220,16 @@
               description = "ps-todos";
               after = [ "network.target" ];
               wantedBy = [ "multi-user.target" ];
+              path = [ pkgs.jq ];
               serviceConfig = {
-                ExecStart = "${cfg.package}/bin/ps-todos-server ${configFile} ${cfg.dataDir}";
+                ExecStartPre = "${writeRuntimeConfig} ${lib.escapeShellArg cfg.dashboardsFile}";
+                ExecStart = "${cfg.package}/bin/ps-todos-server ${runtimeConfig} ${cfg.dataDir}";
                 Restart = "on-failure";
                 User = cfg.user;
                 Group = cfg.group;
                 WorkingDirectory = cfg.dataDir;
+                RuntimeDirectory = "ps-todos";
+                RuntimeDirectoryMode = "0750";
               };
             };
 

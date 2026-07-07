@@ -35,9 +35,7 @@ Example NixOS configuration:
             enable = true;
             port = 5000;
             openFirewall = true;
-            dashboards = {
-              "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V" = "personal";
-            };
+            dashboardsFile = "/var/lib/ps-todos/dashboards.json";
           };
         }
       ];
@@ -46,5 +44,14 @@ Example NixOS configuration:
 }
 ```
 
-The NixOS module writes a server config containing the packaged frontend path and
-starts `ps-todos-server` as a systemd service.
+The dashboards file is read at service start so dashboard URLs do not need to be
+stored in `/nix/store`. It should be a JSON object:
+
+```json
+{
+  "automerge:2ezdQGspSBhzs9BcfKkcbsiAsj9V": "personal"
+}
+```
+
+The NixOS module writes a runtime server config containing the packaged frontend
+path and starts `ps-todos-server` as a systemd service.
