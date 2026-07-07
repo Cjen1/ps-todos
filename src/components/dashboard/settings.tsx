@@ -2,15 +2,19 @@ import { FC, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
-import { add_existing_project, create_new_project, Dashboard, delete_project, update_dashboard_title, update_project_petname } from "./store";
+import { add_existing_project, create_new_project, Dashboard, delete_project, move_project, ordered_project_urls, update_dashboard_title, update_project_petname } from "./store";
 import { Menu, Download } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useDocument, useRepo, Repo, AutomergeUrl, isValidAutomergeUrl } from "@automerge/react";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import { object_map } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Project } from "@/components/project/store";
+import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
+import { DragHandle } from "@/components/ui/handles";
 
 const exportProject = async (repo: Repo, purl: AutomergeUrl) => {
   const project_promise = await repo.find<Project>(purl);
@@ -49,6 +53,7 @@ const uploadProject = async (repo: Repo, changeDoc: any, file: File) => {
       }
       doc.projects[purl] = {
         petname: petname,
+        order: Object.keys(doc.projects).length,
       };
     });
     console.log("Project uploaded successfully:", purl);
@@ -60,19 +65,41 @@ const uploadProject = async (repo: Repo, changeDoc: any, file: File) => {
 const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUrl }> = ({ dashboard_url, purl }) => {
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
   const repo: Repo = (useRepo() as any) as Repo;
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: purl });
+  const transform_style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+  };
 
   const project = dashboard?.projects[purl];
   if (!dashboard || !project) {
     return (
-      <li key={purl} className="flex flex-col gap-2">
+      <li key={purl} className="flex flex-col gap-2" ref={setNodeRef} style={transform_style}>
         <Label className="justify-center">{purl}</Label>
       </li>
     );
   }
 
   return (
-    <li key={purl} className="flex flex-col gap-2" data-testid="project-settings" data-project-id={purl}>
-      <div className="flex justify-center" data-testid="project-url">{purl}</div>
+    <li
+      key={purl}
+      className="flex flex-col gap-2"
+      ref={setNodeRef}
+      style={transform_style}
+      data-testid="project-settings"
+      data-project-id={purl}
+    >
+      <div className="flex flex-row items-center gap-2">
+        <button
+          type="button"
+          className="touch-none"
+          {...listeners}
+          {...attributes}
+        >
+          <DragHandle />
+        </button>
+        <div className="flex justify-center break-all" data-testid="project-url">{purl}</div>
+      </div>
       <div className="flex flex-row gap-2">
         <Label className="w-fit">Petname</Label>
         <Input
@@ -127,6 +154,15 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
     event.target.value = "";
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (!event.over) {
+      return;
+    }
+    move_project(changeDoc, event.active.id.toString() as AutomergeUrl, event.over.id.toString() as AutomergeUrl);
+  };
+
+  const project_urls = dashboard ? ordered_project_urls(dashboard) : [];
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -145,14 +181,18 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
               onChange={(event) => update_dashboard_title(changeDoc, event.target.value)}
             />
           </div>
-          {object_map(dashboard?.projects ?? {}, (purl, _) => {
-            return (
-              <div key={purl} className="flex flex-col gap-2">
-                <Separator />
-                <SingleProjectSettings dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
-              </div>
-            )
-          })}
+          <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
+            <SortableContext items={project_urls} strategy={verticalListSortingStrategy}>
+              {project_urls.map((purl) => {
+                return (
+                  <div key={purl} className="flex flex-col gap-2">
+                    <Separator />
+                    <SingleProjectSettings dashboard_url={dashboard_url} purl={purl as AutomergeUrl} />
+                  </div>
+                )
+              })}
+            </SortableContext>
+          </DndContext>
           <Separator />
           <div className="flex flex-row gap-2">
             <Input
