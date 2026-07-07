@@ -1,5 +1,6 @@
 import { Repo, type AutomergeUrl, updateText, ChangeFn } from '@automerge/react'
 import { Project, new_project } from "@/components/project/store";
+import { moved_order, ordered_items, random_order_between } from "@/lib/ordering";
 
 export type ProjectMetadata = {
     petname: string;
@@ -14,37 +15,25 @@ export type Dashboard = {
 type ChangeDoc = (changeFn: ChangeFn<Dashboard>, options?: any) => void;
 
 function ordered_project_entries(projects: Dashboard["projects"]) {
-    return Object.entries(projects).map(([project_url, project], index) => {
+    const project_entries = Object.entries(projects);
+    return ordered_items(project_entries.map(([project_url, project], index) => {
         return {
-            project_url: project_url as AutomergeUrl,
-            order: project.order ?? index,
+            id: project_url as AutomergeUrl,
+            order: project.order ?? ((index + 1) / (project_entries.length + 1)),
         };
-    }).sort((a, b) => a.order - b.order);
+    }));
 }
 
 function next_project_order(projects: Dashboard["projects"]) {
     const ordered_projects = ordered_project_entries(projects);
     if (ordered_projects.length === 0) {
-        return 0;
+        return random_order_between(0, 1);
     }
-    return ordered_projects[ordered_projects.length - 1].order + 1;
-}
-
-function calculate_next_order(prev_order: number | null, next_order: number | null) {
-    if (prev_order === null && next_order === null) {
-        return 0;
-    }
-    if (prev_order === null) {
-        return (next_order as number) - 1;
-    }
-    if (next_order === null) {
-        return prev_order + 1;
-    }
-    return prev_order + ((next_order - prev_order) / 2);
+    return random_order_between(ordered_projects[ordered_projects.length - 1].order, 1);
 }
 
 export function ordered_project_urls(dashboard: Dashboard) {
-    return ordered_project_entries(dashboard.projects).map(({ project_url }) => project_url);
+    return ordered_project_entries(dashboard.projects).map(({ id }) => id);
 }
 
 export function update_dashboard_title(changedoc: ChangeDoc, title: string) {
@@ -96,18 +85,9 @@ export function move_project(changedoc: ChangeDoc, purl: AutomergeUrl, over_url:
             return;
         }
 
-        const sorted_projects = ordered_project_entries(doc.projects);
-        const active_idx = sorted_projects.findIndex((project) => project.project_url === purl);
-        const over_idx = sorted_projects.findIndex((project) => project.project_url === over_url);
-
-        if (active_idx === -1 || over_idx === -1) {
-            return;
+        const next_order = moved_order(ordered_project_entries(doc.projects), purl, over_url);
+        if (next_order !== null) {
+            doc.projects[purl].order = next_order;
         }
-
-        const sorted_without_active = sorted_projects.filter((project) => project.project_url !== purl);
-        const prev_order = sorted_without_active[over_idx - 1]?.order ?? null;
-        const next_order = sorted_without_active[over_idx]?.order ?? null;
-
-        doc.projects[purl].order = calculate_next_order(prev_order, next_order);
     });
 }
