@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -110,10 +110,45 @@ const SingleProjectSettings: FC<{ dashboard_url: AutomergeUrl, purl: AutomergeUr
 export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboard_url }) => {
   const repo = useRepo();
   const [dashboard, changeDoc] = useDocument<Dashboard>(dashboard_url);
+  const [openSettings, setOpenSettings] = useState(false);
 
   const [input_new_project_petname, update_input_new_project_petname] = useState("");
   const [input_existing_project_petname, update_input_existing_project_petname] = useState("");
   const [input_existing_project_url, update_input_existing_project_url] = useState("");
+
+  useEffect(() => {
+    if (!openSettings) {
+      return;
+    }
+
+    const currentState = window.history.state;
+    const nextState = typeof currentState === "object" && currentState !== null
+      ? { ...currentState, dashboardSettingsOpen: true }
+      : { dashboardSettingsOpen: true };
+
+    window.history.pushState(nextState, "", window.location.href);
+
+    const handlePopState = () => {
+      setOpenSettings(false);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [openSettings]);
+
+  const handleOpenSettingsChange = (open: boolean) => {
+    if (open) {
+      setOpenSettings(true);
+      return;
+    }
+
+    setOpenSettings(false);
+    const currentState = window.history.state;
+
+    if (typeof currentState === "object" && currentState !== null && currentState.dashboardSettingsOpen) {
+      window.history.back();
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,9 +163,9 @@ export const DashboardSettings: FC<{ dashboard_url: AutomergeUrl }> = ({ dashboa
   };
 
   return (
-    <Sheet>
+    <Sheet open={openSettings} onOpenChange={handleOpenSettingsChange}>
       <SheetTrigger asChild>
-        <button type="button" data-testid="dashboard-settings-trigger"><Menu /></button>
+        <button type="button" aria-label="Dashboard settings" data-testid="dashboard-settings-trigger"><Menu /></button>
       </SheetTrigger>
       <SheetContent side="left" className="max-w-md w-fit h-full" aria-describedby={undefined}>
         <SheetHeader>
